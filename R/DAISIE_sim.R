@@ -8,6 +8,7 @@ DAISIE_sim = function(
   replicates_apply_type2 = TRUE,
   sample_freq = 25,
   plot_sims = TRUE,
+  island_ontogeny = 0, # 0 = no effect; 1 = quadratic function; 2 = linear function
   ...) 
 {
   island_replicates  = list()
@@ -21,7 +22,7 @@ DAISIE_sim = function(
     
     for(rep in 1:replicates)
     {
-      island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = M,pars=pars)
+      island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = M,pars=pars, island_ontogeny = island_ontogeny)
       print(paste("Island replicate ",rep,sep = ""))	
     } 
     island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
@@ -44,7 +45,7 @@ DAISIE_sim = function(
         
         island_replicates[[rep]] = full_list
         print(paste("Island replicate ",rep,sep = ""))	
-      } 
+      }
     }
     
     if(length(pars) == 10)
