@@ -1,4 +1,4 @@
-DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny)
+DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars)
 {
   lac = pars[1]
   mu = pars[2]
@@ -38,6 +38,8 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny)
     }
     
     if(island_ontogeny == 1){
+      if(Apars = )
+      island_area(timeval, Apars, shape)
       ext_rate = mu * length(island_spec[,1])
       ana_rate = laa * length(which(island_spec[,4] == "I"))
       clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
