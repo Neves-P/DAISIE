@@ -29,13 +29,13 @@ extcutoff<-max(1000,1000*(ana0+clado0+immig0))
 getExtRate <- function(t,Apars,Epars,shape,extcutoff){
   # X <- log(Epars[1] / Epars[2]) / log(0.1)
   X <- Epars[1]/Epars[2]
-  extrate <- Epars[1] * ((island_area(t, Apars, shape) / Apars[2])^X) # Was Epars[1] / ((island...))
+  extrate <- Epars[1] / ((island_area(t, Apars, shape) / Apars[2])^X) # / inverts function shape
   extrate[which(extrate > extcutoff)] <- extcutoff
   return(extrate)
 }
 res_area <- c()
-for(i in 1:length(vec)){res_area[i] <- island_area(vec[[i]], Apars = c(10, 100, 5, 90), shape = 1)}
+for(i in 1:length(vec)){res_area[i] <- island_area(vec[[i]], Apars = c(10, 100, 1, 90), shape = 1)}
 res_ext <- c()
-for(i in 1:length(vec)){res_ext[i] <- getExtRate(vec[[i]], Apars = c(10, 100, 5, 90), Epars, shape = 1, 1000)}
+for(i in 1:length(vec)){res_ext[i] <- getExtRate(vec[[i]], Apars = c(10, 100, 1, 90), Epars, shape = 1, 1000)}
 plot(res_area)
 plot(res_ext)
