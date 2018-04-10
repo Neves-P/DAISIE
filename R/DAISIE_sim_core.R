@@ -71,11 +71,11 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NU
       
       ana_rate = laa * length(which(island_spec[,4] == "I"))
       
-      if(K ==Inf){
+      # Maybe if statement is not needed here as K = Inf * Area = Inf
+      if(K == Inf){
         clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
         immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
       }else{
-      
       clado_rate = max(c(length(island_spec[,1]) * 
                            (lac * (1 -length(island_spec[,1]) /
                            (K * Apars[2]))),0), na.rm = T)
@@ -99,10 +99,20 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NU
       # Cap extinction rate to prevent simulation from taking to long
       extcutoff<-max(1000,1000*(ana0+clado0+immig0))
       
-      ext_rate = mu * length(island_spec[,1])
+      
+      if(timeval < Apars[3]){
+        ext_rate <- getExtRate(timeval, Apars, 
+                               c(mu_min,mu_high, shape, extcutoff)) * length(island_spec[,1])
+      }else{
+        ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval),
+                               Apars, c(mu_min, mu_high), shape, extcutoff) *
+          length(island_spec[,1])
+      }
+      
       ana_rate = laa * length(which(island_spec[,4] == "I"))
-      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
+      
+      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1]) / K)),0), na.rm = T)
+      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1]) / K),0),na.rm = T)
       
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
       dt = rexp(1,totalrate)
