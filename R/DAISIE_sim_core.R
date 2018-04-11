@@ -22,6 +22,8 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
   stt_table[1,] = c(time,0,0,0)
   ext_demultiplier <- 0.5
   
+  # Amax or MaxArea on extinction rate function????
+  
   while(timeval < time)
   { 
     # No island ontogeny
@@ -72,8 +74,8 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
       ana_rate = laa * length(which(island_spec[,4] == "I"))
       clado_rate = max(c(length(island_spec[,1]) * 
                            (lac * (1 -length(island_spec[,1]) /
-                           (K * Apars[2]))),0), na.rm = T)
-      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/(K * Apars[2])), 0), na.rm = T)
+                           (K * MaxArea))),0), na.rm = T)
+      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/(K * MaxArea)), 0), na.rm = T)
       
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
       dt = rexp(1,totalrate)
@@ -89,8 +91,10 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
         stop("Please specify area parameters for island ontogeny simulation.")
       }
       
+      MaxArea <- island_area(timeval, Apars, "linear")
+      
       # Cap extinction rate to prevent simulation from taking to long
-      extcutoff<-max(1000,1000*(ana0+clado0+immig0))
+      extcutoff <- max(1000,1000*(ana0+clado0+immig0))
       
       
       if(timeval < Apars[3]){
@@ -104,8 +108,8 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
       
       ana_rate = laa * length(which(island_spec[,4] == "I"))
       
-      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1]) / K)),0), na.rm = T)
-      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1]) / K),0),na.rm = T)
+      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1]) / (K * MaxArea))),0), na.rm = T)
+      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1]) / (K * MaxArea)),0),na.rm = T)
       
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
       dt = rexp(1,totalrate)
