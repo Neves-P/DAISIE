@@ -1,4 +1,5 @@
-DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars = NULL, shape = NULL)
+DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
+                           Apars = NULL, Epars = NULL, shape = NULL)
 {
   lac = pars[1]
   mu = pars[2]
@@ -43,10 +44,10 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
       timeval  =  timeval  + dt
       
       possible_event = sample(1:4,1,replace=FALSE,c(immig_rate,ext_rate,ana_rate,clado_rate))
-    }
     
+    }else if(island_ontogeny == "quadratic"){
     # Quadratic island ontogeny
-    if(island_ontogeny == "quadratic"){
+
       if(is.null(Apars)){
         stop("Please specify area parameters for island ontogeny simulation.")
       }
@@ -57,17 +58,17 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
       }
       
       # Cap extinction rate to prevent simulation from taking to long
-      extcutoff<-max(1000,1000*(ana0+clado0+immig0))
+      extcutoff<-max(1000,1000*(laa + lac + gam))
       
       island_area(timeval, Apars, shape)
       # ext_rate = mu * length(island_spec[,1])
   
       if(timeval < Apars[3]){
         ext_rate <- getExtRate(timeval, Apars, 
-                               c(mu_min,mu_high, shape, extcutoff)) * length(island_spec[,1])
+                               c(Epars[1],Epars[2]), shape = "quadratic", extcutoff) * length(island_spec[,1])
       }else{
         ext_rate <- getExtRatext(timeval + ext_demultiplier * (time - timeval),
-                                 Apars, c(mu_min, mu_high), shape, extcutoff) *
+                                 Apars, c(Epars[1], Epars[2]), shape = "quadratic", extcutoff) *
                                  length(island_spec[,1])
       }
       
@@ -83,10 +84,10 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
       timeval  =  timeval  + dt
       
       possible_event = sample(1:4,1,replace=FALSE,c(immig_rate,ext_rate,ana_rate,clado_rate))
-    }
     
+    }else if(island_ontogeny == "linear"){
     # Linear island ontogeny
-    if(island_ontogeny == "linear"){
+    
       if(is.null(Apars)){
         stop("Please specify area parameters for island ontogeny simulation.")
       }
@@ -94,15 +95,15 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
       MaxArea <- island_area(timeval, Apars, "linear")
       
       # Cap extinction rate to prevent simulation from taking to long
-      extcutoff <- max(1000,1000*(ana0+clado0+immig0))
+      extcutoff <- max(1000,1000*(laa+clado0+immig0))
       
       
       if(timeval < Apars[3]){
         ext_rate <- getExtRate(timeval, Apars, 
-                               c(mu_min,mu_high, shape, extcutoff)) * length(island_spec[,1])
+                               c(Epars[1],Epars[2]), "linear", extcutoff) * length(island_spec[,1])
       }else{
         ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval),
-                               Apars, c(mu_min, mu_high), shape, extcutoff) *
+                               Apars, c(Epars[1], Epars[2]), "linear", extcutoff) *
           length(island_spec[,1])
       }
       
