@@ -28,7 +28,7 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars =
   { 
     # No island ontogeny
     if(is.null(island_ontogeny)){
-      if(!is.null = Apars){
+      if(!is.null(Apars)){
         print("No island ontogeny assumed. Ignoring Apars.")
         flush.console()
       }
