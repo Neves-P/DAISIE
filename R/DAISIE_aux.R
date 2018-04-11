@@ -1,6 +1,6 @@
-island_area<-function(t,Apars,shape){
-  if(shape==0){return(Apars[2])}	
-  if(shape==1){
+island_area<-function(t,Apars,shape = NULL){
+  if(is.null(shape)){return(Apars[2])}	
+  if(shape == "quadratic"){
     Tmax <- Apars[1] # total time
     Amax <- Apars[2] # maximum area
     Topt<-Apars[3] # peak position
@@ -13,7 +13,7 @@ island_area<-function(t,Apars,shape){
     return(At)}
   
   #Linear decline
-  if(shape == 2){
+  if(shape == "linear"){
     Tmax <- Apars[1]
     proptime<- t/Tmax
     b <- Apars[2] # intercept (peak area)
