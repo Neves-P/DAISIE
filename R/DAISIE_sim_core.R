@@ -1,4 +1,4 @@
-DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NULL, shape = NULL)
+DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL, Apars = NULL, shape = NULL)
 {
   lac = pars[1]
   mu = pars[2]
@@ -25,7 +25,7 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NU
   while(timeval < time)
   { 
     # No island ontogeny
-    if(island_ontogeny == 0){
+    if(is.null(island_ontogeny)){
       if(!is.null = Apars){
         print("No island ontogeny assumed. Ignoring Apars.")
         flush.console()
@@ -44,7 +44,7 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NU
     }
     
     # Quadratic island ontogeny
-    if(island_ontogeny == 1){
+    if(island_ontogeny == "quadratic"){
       if(is.null(Apars)){
         stop("Please specify area parameters for island ontogeny simulation.")
       }
@@ -70,17 +70,10 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NU
       }
       
       ana_rate = laa * length(which(island_spec[,4] == "I"))
-      
-      # Maybe if statement is not needed here as K = Inf * Area = Inf
-      if(K == Inf){
-        clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-        immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-      }else{
       clado_rate = max(c(length(island_spec[,1]) * 
                            (lac * (1 -length(island_spec[,1]) /
                            (K * Apars[2]))),0), na.rm = T)
       immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/(K * Apars[2])), 0), na.rm = T)
-      }
       
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
       dt = rexp(1,totalrate)
@@ -91,7 +84,7 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = 0, Apars = NU
     }
     
     # Linear island ontogeny
-    if(island_ontogeny == 2){
+    if(island_ontogeny == "linear"){
       if(is.null(Apars)){
         stop("Please specify area parameters for island ontogeny simulation.")
       }
