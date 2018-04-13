@@ -22,25 +22,39 @@ island_area<-function(t,Apars,shape = NULL){
     return(At)
   }
 }
- # USAR EXPRESSÃO ANTIGA E DEPOIS MUDAR
+
 extcutoff<-max(1000,1000*(ana0+clado0+immig0))
 
 #Function to describe relationship between area and extinction rate
-getExtRate <- function(t,Apars,Epars,shape,extcutoff){
-  # X <- log(Epars[1] / Epars[2]) / log(0.1)
-  X <- (Epars[1]/Epars[2])
-  # X <- 0.5
-  extrate <- (island_area(t, Apars, shape) / Apars[2])^-X
-  print(paste0("area/areaMax at t=", t, ": ", (island_area(t, Apars, shape) / Apars[2])))
-  print(paste0("mu = ",extrate))
+getExtRate <- function(t,Apars,mu,shape,extcutoff, mu_version){
+  Epars[1] <- min(0.01, mu - mu/2) # Epars contains mu_min and mu_max for quadratic and logistic
+  Epars[2] <- mu + mu/2
+  
+  if(mu_version == "procb"){
+    X <- log(Epars[1] / Epars[2]) / log(0.1)
+    extrate <- Epars[1] / ((island_area(t, Apars, shape) / Apars[2])^X) 
+  }else if(mu_version == "muMax_power"){
+    X <- mu
+    extrate <- -((island_area(t, Apars, shape) / Apars[2]))^(X) + 1 + Epars[1] # Epars1 is basal extinction
+  }else if(mu_version == "logistic"){
+    extrate <- Epars[1] + 1 / (island_area(t, Apars, shape) + 10) # logistic function
+  }else{
+    stop("Please insert valid mu function version.")
+  }
+  # print(paste0("area/areaMax at t=", t, ": ", (island_area(t, Apars, shape) / Apars[2])))
+  # print(paste0("mu = ",extrate))
   extrate[which(extrate > extcutoff)] <- extcutoff
+  # print(island_area(t, Apars, shape))
   return(extrate)
 }
-res_area <- c()
-for(i in 1:length(t_vec)){res_area[i] <- island_area(t_vec[[i]], Apars = c(100, 100, 25, 1), shape = 1)}
-res_ext <- c()
-for(i in 1:length(t_vec)){res_ext[i] <- getExtRate(t_vec[[i]], Apars = c(100, 100, 25, 1), Epars, shape = 1, 1000)}
-plot(res_area, main = "Area. Apars = 10, 100, 5, 90")
-plot(res_ext, main = "Ext 2018. Apars = 10, 100, 5, 90")
 
+t_vec <- 0:99
+
+# Test functions
+res_area <- c()
+for(i in 1:length(t_vec)){res_area[i] <- island_area(t_vec[[i]], Apars = c(100, 100, 25, 1), shape = "linear")}
+res_ext <- c()
+for(i in 1:length(t_vec)){res_ext[i] <- getExtRate(t_vec[[i]], Apars = c(100, 100, 25, 1), mu, shape = "linear", 1000, mu_version ="logistic")}
+plot(res_area, main = paste0("Area. Apars = ", Apars))
+plot(res_ext, main = "Ext 2018. Apars = 10, 100, 5, 90")
 

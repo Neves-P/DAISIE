@@ -1,5 +1,5 @@
 DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
-                           Apars = NULL, Epars = NULL)
+                           Apars = NULL, mu_version = NULL)
 {
   lac = pars[1]
   mu = pars[2]
@@ -7,7 +7,6 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
   gam = pars[4]
   laa = pars[5]
   MaxArea <- Apars[2]
-  
   if(pars[4]==0) 
   {
     stop('Rate of colonisation is zero. Island cannot be colonised.')
@@ -61,15 +60,19 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
       # Cap extinction rate to prevent simulation from taking to long
       extcutoff<-max(1000,1000*(laa + lac + gam))
       
-      island_area(timeval, Apars, island_ontogeny)
+      # island_area(timeval, Apars, island_ontogeny)
       # ext_rate = mu * length(island_spec[,1])
-  
+      # print(Apars)
+      # print(mu)
+      # print(timeval)
+      # print(extcutoff)
+      # print(length(island_spec[,1]))
       if(timeval < Apars[3]){
         ext_rate <- getExtRate(timeval, Apars, 
-                               c(Epars[1],Epars[2]), shape = "quadratic", extcutoff) * length(island_spec[,1])
+                               mu, shape = "quadratic", extcutoff, mu_version) * length(island_spec[,1])
       }else{
         ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval),
-                                 Apars, c(Epars[1], Epars[2]), "quadratic", extcutoff) *
+                                 Apars, mu, "quadratic", extcutoff, mu_version) *
                                  length(island_spec[,1])
       }
       
@@ -78,7 +81,10 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
                            (lac * (1 -length(island_spec[,1]) /
                            (K * MaxArea))),0), na.rm = T)
       immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/(K * MaxArea)), 0), na.rm = T)
-      
+      # print(immig_rate)
+      # print(ext_rate)
+      # print(ana_rate)
+      # print(clado_rate)
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
       dt = rexp(1,totalrate)
       
@@ -101,10 +107,11 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
       
       if(timeval < Apars[3]){
         ext_rate <- getExtRate(timeval, Apars, 
-                               c(Epars[1], Epars[2]), "linear", extcutoff) * length(island_spec[,1])
+                               mu, "linear",
+                               extcutoff, mu_version) * length(island_spec[,1])
       }else{
         ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval),
-                               Apars, c(Epars[1], Epars[2]), "linear", extcutoff) *
+                               Apars, mu, "linear", extcutoff, mu_version) *
           length(island_spec[,1])
       }
       
@@ -115,7 +122,6 @@ DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
       
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
       dt = rexp(1,totalrate)
-      
       timeval  =  timeval  + dt
       
       possible_event = sample(1:4,1,replace=FALSE,c(immig_rate,ext_rate,ana_rate,clado_rate))
