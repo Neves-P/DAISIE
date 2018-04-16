@@ -1,6 +1,9 @@
 island_area<-function(t,Apars,shape = NULL){
   if(is.null(shape)){return(Apars[2])}	
   if(shape == "quadratic"){
+    if(Apars[3] > Apars[1]){
+      stop("Apars[3] > Apars[1]: Peak position cannot be higher than total time.")
+    }
     Tmax <- Apars[1] # total time
     Amax <- Apars[2] # maximum area
     Topt<-Apars[3] # peak position
@@ -23,7 +26,7 @@ island_area<-function(t,Apars,shape = NULL){
   }
 }
 
-extcutoff<-max(1000,1000*(ana0+clado0+immig0))
+
 
 #Function to describe relationship between area and extinction rate
 getExtRate <- function(t,Apars,mu,shape,extcutoff, mu_version){
@@ -41,10 +44,10 @@ getExtRate <- function(t,Apars,mu,shape,extcutoff, mu_version){
   }else{
     stop("Please insert valid mu function version.")
   }
-  # print(paste0("area/areaMax at t=", t, ": ", (island_area(t, Apars, shape) / Apars[2])))
-  # print(paste0("mu = ",extrate))
+  print(paste0("area/areaMax at t=", t, ": ", (island_area(t, Apars, shape) / Apars[2])))
+  print(paste0("mu = ",extrate))
   extrate[which(extrate > extcutoff)] <- extcutoff
-  # print(island_area(t, Apars, shape))
+  print(island_area(t, Apars, shape))
   return(extrate)
 }
 
