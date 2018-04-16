@@ -44,10 +44,10 @@ getExtRate <- function(t,Apars,mu,shape,extcutoff, mu_version){
   }else{
     stop("Please insert valid mu function version.")
   }
-  print(paste0("area/areaMax at t=", t, ": ", (island_area(t, Apars, shape) / Apars[2])))
-  print(paste0("mu = ",extrate))
+  # print(paste0("area/areaMax at t=", t, ": ", (island_area(t, Apars, shape) / Apars[2])))
+  # print(paste0("mu = ",extrate))
   extrate[which(extrate > extcutoff)] <- extcutoff
-  print(island_area(t, Apars, shape))
+  # print(island_area(t, Apars, shape))
   return(extrate)
 }
 
