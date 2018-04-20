@@ -9,6 +9,5 @@ for(i in 1:100){
   area_loop[i] <- island_area(i, Apars, shape = "quadratic")
 }
 plot(mu_loop)
-plot(mu_loop1)
 plot(-area_loop)
 Apars
