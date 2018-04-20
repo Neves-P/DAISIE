@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 Package: DAISIE_ontogeny
-=======
-Package: DAISIE_ontogeny()
->>>>>>> db36a530d45dedb0fbdd2385fb226c001d6d260b
 Type: Package
 Title: Dynamical Assembly of Islands by Speciation, Immigration and
         Extinction
