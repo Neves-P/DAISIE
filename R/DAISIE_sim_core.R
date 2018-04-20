@@ -6,7 +6,7 @@ DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
   K = pars[3]
   gam = pars[4]
   laa = pars[5]
-  MaxArea <- Apars[2]
+  MaxArea <- Apars[1]
   if(pars[4]==0) 
   {
     stop('Rate of colonisation is zero. Island cannot be colonised.')
@@ -35,7 +35,7 @@ DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
       }
       ext_rate = mu * length(island_spec[,1])
       ana_rate = laa * length(which(island_spec[,4] == "I"))
-      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
+      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1]) / K)),0),na.rm = T)
       immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
       
       totalrate = ext_rate + clado_rate + ana_rate + immig_rate
@@ -53,8 +53,7 @@ DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
       }
       
       if(timeval>=Apars[3]){
-        MaxArea <- island_area(timeval, c(time, Apars[2],
-                                          Apars[3], Apars[4]), island_ontogeny)
+        MaxArea <- island_area(timeval, time, Apars, island_ontogeny)
       }
       
       # Cap extinction rate to prevent simulation from taking to long
@@ -68,10 +67,10 @@ DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
       # print(extcutoff)
       # print(length(island_spec[,1]))
       if(timeval < Apars[3]){
-        ext_rate <- getExtRate(timeval, Apars, 
+        ext_rate <- getExtRate(timeval, time, Apars, 
                                mu, shape = "quadratic", extcutoff, mu_version) * length(island_spec[,1])
       }else{
-        ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval),
+        ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval), time,
                                  Apars, mu, "quadratic", extcutoff, mu_version) *
                                  length(island_spec[,1])
       }
@@ -99,18 +98,18 @@ DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
         stop("Please specify area parameters for island ontogeny simulation.")
       }
       
-      MaxArea <- island_area(timeval, Apars, "linear")
+      MaxArea <- island_area(timeval, time, Apars, "linear")
       
       # Cap extinction rate to prevent simulation from taking to long
       extcutoff <- max(1000, 1000 * (laa + lac + gam))
       
       
       if(timeval < Apars[3]){
-        ext_rate <- getExtRate(timeval, Apars, 
+        ext_rate <- getExtRate(timeval, time, Apars, 
                                mu, "linear",
                                extcutoff, mu_version) * length(island_spec[,1])
       }else{
-        ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval),
+        ext_rate <- getExtRate(timeval + ext_demultiplier * (time - timeval), time, 
                                Apars, mu, "linear", extcutoff, mu_version) *
           length(island_spec[,1])
       }
