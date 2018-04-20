@@ -1,3 +1,5 @@
+# Function to describe changes in area through time. Adapted from
+# Valente et al 2014 ProcB
 island_area<-function(t,Apars,shape = NULL){
   if(is.null(shape)){return(Apars[2])}	
   if(shape == "quadratic"){
@@ -28,9 +30,10 @@ island_area<-function(t,Apars,shape = NULL){
 
 
 
-#Function to describe relationship between area and extinction rate
-getExtRate <- function(t,Apars,mu,shape,extcutoff, mu_version){
-  Epars[1] <- min(0.01, mu - mu/2) # Epars contains mu_min and mu_max for quadratic and logistic
+# Function to describe changes extinction rate through time. Adapted from
+# Valente et al 2014 ProcB
+getExtRate <- function(t, Apars, mu, shape, extcutoff, mu_version){
+  Epars[1] <- max(0.01, mu - mu/2) # Epars contains mu_min and mu_max for quadratic and logistic
   Epars[2] <- mu + mu/2
   
   if(mu_version == "procb"){
@@ -50,14 +53,4 @@ getExtRate <- function(t,Apars,mu,shape,extcutoff, mu_version){
   # print(island_area(t, Apars, shape))
   return(extrate)
 }
-
-t_vec <- 0:99
-
-# Test functions
-res_area <- c()
-for(i in 1:length(t_vec)){res_area[i] <- island_area(t_vec[[i]], Apars = c(100, 100, 25, 1), shape = "linear")}
-res_ext <- c()
-for(i in 1:length(t_vec)){res_ext[i] <- getExtRate(t_vec[[i]], Apars = c(100, 100, 25, 1), mu, shape = "linear", 1000, mu_version ="logistic")}
-plot(res_area, main = paste0("Area. Apars = ", Apars))
-plot(res_ext, main = "Ext 2018. Apars = 10, 100, 5, 90")
 
