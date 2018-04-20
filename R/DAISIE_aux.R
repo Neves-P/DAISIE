@@ -1,15 +1,15 @@
 # Function to describe changes in area through time. Adapted from
 # Valente et al 2014 ProcB
-island_area<-function(t,Apars,shape = NULL){
-  if(is.null(shape)){return(Apars[2])}	
+island_area<-function(t, time, Apars,shape = NULL){
+  if(is.null(shape)){return(Apars[1])}	
   if(shape == "quadratic"){
-    if(Apars[3] > Apars[1]){
-      stop("Apars[3] > Apars[1]: Peak position cannot be higher than total time.")
+    if(Apars[2] > time){
+      stop("Apars[2] > time: Peak position cannot be higher than total time.")
     }
-    Tmax <- Apars[1] # total time
-    Amax <- Apars[2] # maximum area
-    Topt<-Apars[3] # peak position
-    peak<-Apars[4] # peakiness - we specify a value of 1 but this is flexible.
+    Tmax <- time # total time
+    Amax <- Apars[1] # maximum area
+    Topt<-Apars[2] # peak position
+    peak<-Apars[3] # peakiness - we specify a value of 1 but this is flexible.
     proptime<- t/Tmax	
     f <-Topt/Tmax / (1 - Topt/Tmax)
     a <-f*peak/(1+f)
@@ -19,9 +19,9 @@ island_area<-function(t,Apars,shape = NULL){
   
   #Linear decline
   if(shape == "linear"){
-    Tmax <- Apars[1]
+    Tmax <- time
     proptime<- t/Tmax
-    b <- Apars[2] # intercept (peak area)
+    b <- Apars[1] # intercept (peak area)
     m <- -(b / Tmax) # slope
     At <- m * t + b
     return(At)
@@ -32,18 +32,18 @@ island_area<-function(t,Apars,shape = NULL){
 
 # Function to describe changes extinction rate through time. Adapted from
 # Valente et al 2014 ProcB
-getExtRate <- function(t, Apars, mu, shape, extcutoff, mu_version){
+getExtRate <- function(t, time, Apars, mu, shape, extcutoff, mu_version){
   Epars[1] <- max(0.01, mu - mu/2) # Epars contains mu_min and mu_max for quadratic and logistic
   Epars[2] <- mu + mu/2
   
   if(mu_version == "procb"){
     X <- log(Epars[1] / Epars[2]) / log(0.1)
-    extrate <- Epars[1] / ((island_area(t, Apars, shape) / Apars[2])^X) 
+    extrate <- Epars[1] / ((island_area(t, time, Apars, shape) / Apars[1])^X) 
   }else if(mu_version == "muMax_power"){
     X <- mu
     extrate <- -((island_area(t, Apars, shape) / Apars[2]))^(X) + 1 + Epars[1] # Epars1 is basal extinction
   }else if(mu_version == "logistic"){
-    extrate <- Epars[1] + 1 / (island_area(t, Apars, shape) + 10) # logistic function
+    extrate <- Epars[1] + 1 / (island_area(t, time, Apars, shape) + 10) # logistic function
   }else{
     stop("Please insert valid mu function version.")
   }

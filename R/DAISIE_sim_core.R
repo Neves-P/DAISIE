@@ -1,4 +1,4 @@
-DAISIE_sim_core = function(time,mainland_n,pars, island_ontogeny = NULL,
+DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
                            Apars = NULL, mu_version = NULL)
 {
   lac = pars[1]
