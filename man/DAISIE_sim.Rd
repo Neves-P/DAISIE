@@ -18,6 +18,9 @@ DAISIE_sim(
    replicates_apply_type2 = TRUE,
    sample_freq = 25,
    plot_sims = TRUE,
+   island_ontogeny = NULL,
+   Apars = NULL,
+   mu_version = NULL,
    ...)
 }
 
@@ -58,7 +61,16 @@ plots with higher definition, but will also run slower.}
 \item{plot_sims}{Default=TRUE plots species-through-time (STT) plots. It detects how many types
  of species are present. If only one type of species is present, STT is plotted for all species. If two types are present, 
 three plots are produced: STT for all, STT for type 1 and STT for type 2. }
- \item{...}{ Any arguments to pass on to plotting functions.}
+\item{island_ontogeny}{The type of possible island ontogeny functions. Setting quadratic will model a function of time as a negative quadratic function which can be shaped by Apars. Setting linear will model a linear function with negative slope.}
+\item{Apars}{Vector of parameters controlling island ontogeny area function. }
+  \code{Apars[1]}{Maximum area of the island.}
+  \code{Apars[2]}{Peak position of quadratic function. If in middle of 
+  time, then a negative quadratic function is produced. If lower than
+  total time then a hump shaped function resembling volcanic area is 
+  produced}
+  \code{Apars[3]}{Peakiness. How bell shaped the function is.}
+\item{mu_version}{Selects function to relate extinction rate to area ontogeny. procb uses function implemented in 2014 procb paper. logistic implements function similar to logistic function. muMax_version uses a simple power law of mu rate + mu0 * 0.5}
+\item{...}{ Any arguments to pass on to plotting functions.}
 }
 \details{Returns R list object that contains the simulated islands.}
 \value{
