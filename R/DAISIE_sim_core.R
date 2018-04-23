@@ -31,7 +31,6 @@ DAISIE_sim_core = function(time, mainland_n, pars, island_ontogeny = NULL,
     if(is.null(island_ontogeny)){
       if(!is.null(Apars) && timeval == 0){
         print("No island ontogeny assumed. Ignoring Apars.")
-        flush.console()
       }
       ext_rate = mu * length(island_spec[,1])
       ana_rate = laa * length(which(island_spec[,4] == "I"))
