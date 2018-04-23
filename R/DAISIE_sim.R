@@ -13,6 +13,8 @@ DAISIE_sim = function(
   mu_version = NULL,
   ...) 
 {
+  
+  # ADD APARS CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!
   island_replicates  = list()
 
   if(divdepmodel =='IW')
@@ -31,6 +33,9 @@ DAISIE_sim = function(
                                          time = time,M = M, sample_freq = sample_freq)
   }
       
+  
+  
+  
   if(divdepmodel == 'CS')
   {
     if(length(pars) == 5)
