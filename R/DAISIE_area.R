@@ -3,13 +3,15 @@
 # 
 # Convert Apars[2] into % of time to be easily applicable. Add function to convert
 # time % to Topt
-island_area<-function(t, time, Apars, shape = NULL){
-  if(is.null(shape)){return(Apars[1])}	
+island_area <- function(t, time, Apars, shape = NULL){
+  if(is.null(shape)){
+    return(Apars[1])
+  }	
   if(shape == "quadratic"){
     if(Apars[2] > time){
       stop("Apars[2] > time: Peak position cannot be higher than total time.")
     }
-    Tmax <- time # total time
+    aTmax <- time # total time
     Amax <- Apars[1] # maximum area
     Topt <- Apars[2] # peak position
     peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
