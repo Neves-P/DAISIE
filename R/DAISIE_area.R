@@ -3,8 +3,9 @@
 # 
 # Convert Apars[2] into % of time to be easily applicable. Add function to convert
 # time % to Topt
-island_area <- function(t, time, Apars, shape = NULL){
-  if(is.null(shape)){
+island_area <- function(t, time, Apars, shape){
+  # Constant
+  if (shape == "constant"){
     return(Apars[1])
   }	
   if(shape == "quadratic"){
@@ -13,7 +14,7 @@ island_area <- function(t, time, Apars, shape = NULL){
     }
     aTmax <- time # total time
     Amax <- Apars[1] # maximum area
-    Topt <- Apars[2] # peak position
+    Topt <- Apars[2] * time # peak position in %
     peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
     proptime<- t/Tmax	
     f <- Topt/Tmax / (1 - Topt/Tmax)
@@ -34,7 +35,7 @@ island_area <- function(t, time, Apars, shape = NULL){
 }
 
 
-# Function to describe changes in extinction rate through time. Adapted from
+# Function to describe changes in extinction rate through time. From
 # Valente et al 2014 ProcB
 getExtRate <- function(t, time, Apars, Epars, shape, extcutoff){
   X <- log(Epars[1] / Epars[2]) / log(0.1)
