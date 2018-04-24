@@ -6,6 +6,11 @@
 
 island_area <- function(t, time, Apars, shape){
 
+  Tmax <- time # total time
+  Amax <- Apars[1] # maximum area
+  Topt <- Apars[2] * time # peak position in %
+  peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
+  proptime<- t/Tmax	
   # Constant
   if (shape == "constant"){
     return(Apars[1])
@@ -14,11 +19,7 @@ island_area <- function(t, time, Apars, shape){
     if(Apars[2] > time){
       stop("Apars[2] > time: Peak position cannot be higher than total time.")
     }
-    aTmax <- time # total time
-    Amax <- Apars[1] # maximum area
-    Topt <- Apars[2] * time # peak position in %
-    peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
-    proptime<- t/Tmax	
+
     f <- Topt/Tmax / (1 - Topt/Tmax)
     a <- f*peak/(1+f)
     b <- peak/(1+f) 
@@ -27,10 +28,8 @@ island_area <- function(t, time, Apars, shape){
   
   #Linear decline
   if(shape == "linear"){
-    Tmax <- time
-    proptime<- t/Tmax
-    b <- Apars[1] # intercept (peak area)
-    m <- -(b / Tmax) # slope
+    b <- Amax # intercept (peak area)
+    m <- -(b / Topt) # slope
     At <- m * t + b
     return(At)
   }
