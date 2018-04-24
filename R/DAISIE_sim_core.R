@@ -32,7 +32,7 @@ DAISIE_sim_core <- function(time,
   # Gillespie algorithm 
   while (timeval < time){
     
-    # No ontogeny - (Style edited for consistency)
+    # No ontogeny rates - (Style edited for consistency)
     if (is.null(island_ontogeny)){
     ext_rate <-mu * length(island_spec[,1])
     ana_rate <- laa * length(island_spec[,1])
@@ -45,8 +45,9 @@ DAISIE_sim_core <- function(time,
     dt <- rexp(1, totalrate)
     }
     
-    else{
-      
+    else if (!is.null(island_ontogeny) && island_ontogeny != "quadratic" ||
+             island_ontogeny != "linear" && island_ontongey !=  "constant") {
+      ext_rate <- getExtRate()
     }
    
     
