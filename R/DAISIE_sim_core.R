@@ -44,10 +44,21 @@ DAISIE_sim_core <- function(time,
     totalrate <- ext_rate + clado_rate + ana_rate + immig_rate
     dt <- rexp(1, totalrate)
     }
-    
-    else if (!is.null(island_ontogeny) && island_ontogeny != "quadratic" ||
-             island_ontogeny != "linear" && island_ontongey !=  "constant") {
-      ext_rate <- getExtRate()
+    # Tests if input island ontogeny toggle is empty xor different than accetable
+    # SHOULD BE MOVED TO DAISIE_SIM
+    else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
+             island_ontogeny != "linear") ||
+             xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
+      
+      ext_rate <- getExtRate(t = timeval, time = time, Apars = Apars, 
+                             Epars = Epars, shape = island_ontogeny, 
+                             extcutoff = extcutoff)
+      if (K == Inf){
+        
+      }
+      
+    }else{
+      stop("Please select valid island ontogeny model. \nSee DAISIE_sim documentation for details.")
     }
    
     
