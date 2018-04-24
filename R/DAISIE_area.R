@@ -3,7 +3,9 @@
 # 
 # Convert Apars[2] into % of time to be easily applicable. Add function to convert
 # time % to Topt
+
 island_area <- function(t, time, Apars, shape){
+
   # Constant
   if (shape == "constant"){
     return(Apars[1])
