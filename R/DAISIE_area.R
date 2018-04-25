@@ -8,17 +8,17 @@ island_area <- function(t, time, Apars, shape){
 
   Tmax <- time # total time
   Amax <- Apars[1] # maximum area
-  Topt <- Apars[2] * time # peak position in %
+  Topt <- Apars[2] # peak position in %
   peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
   proptime<- t/Tmax	
   # Constant
-  if (shape == "constant"){
+  if (is.null(shape)){
     return(Apars[1])
   }	
   if(shape == "quadratic"){
-    if(Apars[2] > time){
-      stop("Apars[2] > time: Peak position cannot be higher than total time.")
-    }
+    # if(Apars[2] > time){
+      # stop("Apars[2] > time: Peak position cannot be higher than total time.")
+    # }
 
     f <- Topt/Tmax / (1 - Topt/Tmax)
     a <- f*peak/(1+f)

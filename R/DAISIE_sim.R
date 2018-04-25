@@ -10,7 +10,6 @@ DAISIE_sim = function(
   plot_sims = TRUE,
   island_ontogeny = NULL, # NULL = no effect; "quadratic" = quadratic function; "linear" = linear function
   Apars = NULL,
-  mu_version = NULL,
   ...) 
 {
   island_replicates  = list()
@@ -38,8 +37,7 @@ DAISIE_sim = function(
                                                   island_ontogeny != "linear") ||
                                               xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
         
-        island_replicates[[rep]] <- DAISIE_sim_core(time=time, mainland_n = M,
-                                                    pars=pars, Apars, Epars, island_ontogeny)
+        island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontongeny = island_ontongeny)
         print(paste("Island replicate ",rep,sep = ""))
         
         island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
@@ -62,10 +60,7 @@ DAISIE_sim = function(
           full_list = list()
         for(m_spec in 1:M) 
         { 	
-          full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars,
-                                                 island_ontogeny = island_ontogeny, 
-                                                 Apars = Apars,
-                                                 mu_version = mu_version)
+          full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontongeny = island_ontongeny)
         }
         
         island_replicates[[rep]] = full_list
@@ -80,10 +75,7 @@ DAISIE_sim = function(
           full_list = list()
           for(m_spec in 1:M) 
           { 	
-            full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars,
-                                                   island_ontogeny = island_ontogeny, 
-                                                   Apars = Apars,
-                                                   mu_version = mu_version)
+            full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontongeny = island_ontongeny)
           }
         } else {
         stop("Please insert valid ontogeny model or NULL (default) for no ontogeny.")
