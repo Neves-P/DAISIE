@@ -60,7 +60,7 @@ DAISIE_sim_core <- function(time,
     }else{
       stop("Please select valid island ontogeny model. \nSee DAISIE_sim documentation for details.")
     }
-   
+   a <- 25
     
     
      
