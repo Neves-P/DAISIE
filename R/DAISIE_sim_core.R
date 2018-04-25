@@ -1,8 +1,8 @@
 DAISIE_sim_core <- function(time, 
                             mainland_n, 
                             pars, 
-                            Apars, 
-                            Epars, 
+                            Apars = NULL, 
+                            Epars = NULL, 
                             island_ontongey = NULL)
 {
   
@@ -29,40 +29,45 @@ DAISIE_sim_core <- function(time,
   stt_table[1,] = c(time, 0, 0, 0)
  
   
+  # while(timeval < time)
+  # {  	
+  #   ext_rate = mu * length(island_spec[,1])
+  #   ana_rate = laa * length(which(island_spec[,4] == "I"))
+  #   clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
+  #   immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
+  #   
+  #   totalrate = ext_rate + clado_rate + ana_rate + immig_rate
+  #   dt = rexp(1,totalrate)
+  #   
+  #   timeval  =  timeval  + dt
+  #   
+  #   possible_event = sample(1:4,1,replace=FALSE,c(immig_rate,ext_rate,ana_rate,clado_rate))
+  #   
+  
   # Gillespie algorithm 
   while (timeval < time){
+    N <- length(island_spec[,1])
     
     # No ontogeny rates - (Style edited for consistency)
     if (is.null(island_ontogeny)){
-    ext_rate <-mu * length(island_spec[,1])
-    ana_rate <- laa * length(island_spec[,1])
-    clado_rate <- max(c(length(island_spec[,1]) * 
-                          (lac * (1 - length(island_spec[,1]) / K)),0),
-                      na.rm = T)
-    immig_rate <- max(c(mainland_n * gam * (1 - length(island_spec[,1]) / K),
-                       0), na.rm = T)
+    ext_rate <-mu * N
+    ana_rate <- laa * N
+    clado_rate <- max(N * (lac * (1 - N / K)), 0, na.rm = T)
+    immig_rate <- max(c(mainland_n * gam * (1 - N / K), 0), na.rm = T)
     totalrate <- ext_rate + clado_rate + ana_rate + immig_rate
     dt <- rexp(1, totalrate)
-    }
-    # Tests if input island ontogeny toggle is empty xor different than accetable
-    # SHOULD BE MOVED TO DAISIE_SIM
-    else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
-             island_ontogeny != "linear") ||
-             xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
+    
+    } else {
       
       ext_rate <- getExtRate(t = timeval, time = time, Apars = Apars, 
                              Epars = Epars, shape = island_ontogeny, 
-                             extcutoff = extcutoff)
+                             extcutoff = extcutoff) * N
+      ana_rate <- laa * length(which(island_spec[,4] == "I"))
+      clado_rate <- max(c(N * (lac * (1 - N) / K), 0), na.rm = T)
+      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
       if (K == Inf){
         
       }
-      
-    }else{
-      stop("Please select valid island ontogeny model. \nSee DAISIE_sim documentation for details.")
     }
-   a <- 25
-    
-    
-     
   }
 }

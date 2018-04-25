@@ -25,6 +25,7 @@ DAISIE_sim = function(
     for(rep in 1:replicates)
     {
       
+      # Tests if input island ontogeny toggle is empty xor different than acceptable
       if (is.null(island_ontogeny)){
         island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = M,pars=pars)
         print(paste("Island replicate ",rep,sep = ""))
@@ -32,6 +33,7 @@ DAISIE_sim = function(
         island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
                                              time = time,M = M, sample_freq = sample_freq)
         
+        # Tests if input island ontogeny toggle is empty xor different than acceptable
       }else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
                                                   island_ontogeny != "linear") ||
                                               xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
@@ -53,6 +55,7 @@ DAISIE_sim = function(
     {
       for(rep in 1:replicates)
       {
+        # Tests if input island ontogeny toggle is empty xor different than acceptable
         if (is.null(island_ontogeny)){
           island_replicates[[rep]] = list() 
           
@@ -67,6 +70,8 @@ DAISIE_sim = function(
         
         island_replicates[[rep]] = full_list
         print(paste("Island replicate ",rep,sep = ""))	
+        
+        # Tests if input island ontogeny toggle is empty xor different than acceptable
         }else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
                                                      island_ontogeny != "linear") ||
                                                  xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
