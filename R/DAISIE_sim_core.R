@@ -79,14 +79,11 @@ DAISIE_sim_core <- function(time,
     # If as rates grow, timeval falls out of MaxArea, bumps time to peak area
     if (timeval <= time){
       if (timeval - dt < (Apars[2] * time) && timeval > (Apars[2] * time)){
-        print(1)
         timeval <- (Apars[2] * time)
       } else {
         if (timeval >= Apars[2] * time && timeval > timeval - dt + g *(time - timeval + dt)){
           timeval <- timeval - dt + g * (time - timeval + dt)
-          print(2)
         } else {
-          print(3)
           possible_event <- sample(1:4, 1, replace = FALSE, 
                                    c(immig_rate, ext_rate, ana_rate, clado_rate))
           print(timeval)

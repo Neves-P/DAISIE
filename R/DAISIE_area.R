@@ -35,7 +35,7 @@ island_area <- function(t, time, Apars, shape){
   }
 }
 
-
+pars
 # Function to describe changes in extinction rate through time. From
 # Valente et al 2014 ProcB
 getExtRate <- function(t, time, Apars, Epars, shape, extcutoff){
