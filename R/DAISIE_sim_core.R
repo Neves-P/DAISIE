@@ -3,7 +3,7 @@ DAISIE_sim_core <- function(time,
                             pars, 
                             Apars = NULL, 
                             Epars = NULL, 
-                            island_ontongeny = NULL)
+                            island_ontogeny = NULL)
 {
   
   # This initial chunk is the same as in DAISIE
