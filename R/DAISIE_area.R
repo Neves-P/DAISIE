@@ -20,10 +20,10 @@ island_area <- function(t, time, Apars, shape){
       # stop("Apars[2] > time: Peak position cannot be higher than total time.")
     # }
 
-    f <- Topt/Tmax / (1 - Topt/Tmax)
-    a <- f*peak/(1+f)
-    b <- peak/(1+f) 
-    At <- Amax * proptime^a * (1 - proptime)^ b / ((a / (a + b))^a * (b / (a + b))^b)
+    f <- Topt / (1 - Topt)
+    a <- f * peak/ ( 1 + f)
+    b <- peak / (1 + f) 
+    At <- Amax * proptime^a * (1 - proptime)^ b/ ((a / (a + b))^a * (b / (a + b))^b)
     return(At)}
   
   #Linear decline

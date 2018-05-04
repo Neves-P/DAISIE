@@ -37,7 +37,7 @@ DAISIE_sim = function(
                                                   island_ontogeny != "linear") ||
                                               xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
         
-        island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontongeny = island_ontongeny)
+        island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontogeny = island_ontogeny)
         print(paste("Island replicate ",rep,sep = ""))
         
         island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
@@ -58,9 +58,10 @@ DAISIE_sim = function(
           island_replicates[[rep]] = list() 
           
           full_list = list()
+          # str(full_list)
         for(m_spec in 1:M) 
         { 	
-          full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontongeny = island_ontongeny)
+          full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontogeny = island_ontogeny)
         }
         
         island_replicates[[rep]] = full_list
@@ -73,9 +74,15 @@ DAISIE_sim = function(
           island_replicates[[rep]] = list() 
           
           full_list = list()
+          # str(full_list)
           for(m_spec in 1:M) 
           { 	
-            full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontongeny = island_ontongeny)
+            full_list[[m_spec]]  = DAISIE_sim_core(time = time, mainland_n = 1, 
+                                                   pars = pars, 
+                                                   Apars = Apars,
+                                                   Epars = Epars,
+                                                   island_ontogeny = island_ontogeny)
+            str(full_list)
           }
         } else {
         stop("Please insert valid ontogeny model or NULL (default) for no ontogeny.")
