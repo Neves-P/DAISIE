@@ -13,7 +13,7 @@ DAISIE_sim = function(
   ...) 
 {
   island_replicates  = list()
-
+  
   if(divdepmodel =='IW')
   {
     if(length(pars) > 5)
@@ -59,18 +59,18 @@ DAISIE_sim = function(
           
           full_list = list()
           # str(full_list)
-        for(m_spec in 1:M) 
-        { 	
-          full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontogeny = island_ontogeny)
-        }
-        
-        island_replicates[[rep]] = full_list
-        print(paste("Island replicate ",rep,sep = ""))	
-        
-        # Tests if input island ontogeny toggle is empty xor different than acceptable
+          for(m_spec in 1:M) 
+          { 	
+            full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontogeny = island_ontogeny)
+          }
+          
+          island_replicates[[rep]] = full_list
+          print(paste("Island replicate ",rep,sep = ""))	
+          
+          # Tests if input island ontogeny toggle is empty xor different than acceptable
         }else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
-                                                     island_ontogeny != "linear") ||
-                                                 xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
+                                                    island_ontogeny != "linear") ||
+                                                xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
           island_replicates[[rep]] = list() 
           
           full_list = list()
@@ -82,13 +82,16 @@ DAISIE_sim = function(
                                                    Apars = Apars,
                                                    Epars = Epars,
                                                    island_ontogeny = island_ontogeny)
-            str(full_list)
           }
+          
+          island_replicates[[rep]] = full_list
+          print(paste("Island replicate ",rep,sep = ""))	
+          
         } else {
-        stop("Please insert valid ontogeny model or NULL (default) for no ontogeny.")
+          stop("Please insert valid ontogeny model or NULL (default) for no ontogeny.")
         }
       }
-      }
+    }
     if(length(pars) == 10)
     {
       if(is.na(prop_type2_pool))

@@ -13,9 +13,9 @@ DAISIE_sim_core <- function(time,
   gam <- pars[4]
   laa <- pars[5]
   MaxArea <- Apars[1]
-  
+  tmax_2 <- 0 # Testing if needed
   extcutoff<-max(1000,1000*(laa+lac+gam))
-  g <-0.5 # Name to be changed
+  g <- 0.5 # Name to be changed
   
   if (pars[4] == 0)
   {
@@ -34,7 +34,7 @@ DAISIE_sim_core <- function(time,
   
   
   # while(timeval < time)
-  # {  	
+  # {
   #   ext_rate = mu * length(island_spec[,1])
   #   ana_rate = laa * length(which(island_spec[,4] == "I"))
   #   clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
@@ -50,225 +50,401 @@ DAISIE_sim_core <- function(time,
   
   # Gillespie algorithm 
   # for no area changes
-  if (is.null(island_ontogeny)){
-  while (timeval < time){
-    N <- length(island_spec[,1])
-    # No ontogeny rates - (Style edited for consistency)
-    # if (is.null(island_ontogeny)){
-      # ext_rate <-mu * N
-      # 
-      ana_rate <- laa * N
-      clado_rate <- max(N * (lac * (1 - N / K)), 0, na.rm = T)
-      immig_rate <- max(c(mainland_n * gam * (1 - N / K), 0), na.rm = T)
-      totalrate <- ext_rate + clado_rate + ana_rate + immig_rate
-      dt <- rexp(1, totalrate)
+  if (is.null(island_ontogeny)) {
+    while(timeval < time)
+    {
+      ext_rate = mu * length(island_spec[,1])
+      ana_rate = laa * length(which(island_spec[,4] == "I"))
+      clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
+      immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
       
-    } else {
-      if (timeval < Apars[2] * time) {
-        # Checks if current maximum area has been reached
-        ext_rate_max <- getExtRate(t = Apars[2] * time, time = time, Apars = Apars,
-        Epars = Epars, shape = island_ontogeny, 
-        extcutoff = extcutoff) * N
+      totalrate = ext_rate + clado_rate + ana_rate + immig_rate
+      dt = rexp(1,totalrate)
+      
+      timeval  =  timeval  + dt
+      
+      possible_event = sample(1:4,1,replace=FALSE,c(immig_rate,ext_rate,ana_rate,clado_rate))
+      
+      ##############
+      if(timeval <= time)
+      {  
+        ##########################################
+        #IMMIGRATION
+        if(possible_event == 1)
+        {  	
+          colonist = DDD::sample2(mainland_spec,1)
+          
+          if(length(island_spec[,1]) != 0){isitthere = which(island_spec[,1] == colonist)}
+          
+          if(length(island_spec[,1]) == 0) {isitthere = c()}
+          
+          if(length(isitthere) == 0){island_spec = rbind(island_spec,c(colonist,colonist,timeval,"I",NA,NA,NA))}
+          
+          if(length(isitthere) != 0){ island_spec[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA)}
+        }
         
-      } else {
+        ##########################################
+        #EXTINCTION
+        if(possible_event == 2)
+        { 	
+          extinct = DDD::sample2(1:length(island_spec[,1]),1)
+          #this chooses the row of species data to remove
+          
+          typeofspecies = island_spec[extinct,4]
+          
+          if(typeofspecies == "I")
+          {
+            island_spec = island_spec[-extinct,]
+          }
+          #remove immigrant
+          
+          if(typeofspecies == "A")
+          {
+            island_spec = island_spec[-extinct,]
+          }
+          #remove anagenetic
+          
+          if(typeofspecies == "C")
+          {
+            #remove cladogenetic
+            
+            #first find species with same ancestor AND arrival time
+            sisters = intersect(which(island_spec[,2] == island_spec[extinct,2]),which(island_spec[,3] == island_spec[extinct,3]))
+            survivors = sisters[which(sisters != extinct)]
+            
+            if(length(sisters) == 2)
+            {
+              #survivors status becomes anagenetic	
+              island_spec[survivors,4] = "A"
+              island_spec[survivors,c(5,6)] = c(NA,NA)
+              island_spec[survivors,7] = "Clado_extinct"
+              island_spec = island_spec[-extinct,]
+            }
+            
+            if(length(sisters) >= 3)
+            {		
+              numberofsplits = nchar(island_spec[extinct,5])
+              
+              mostrecentspl = substring(island_spec[extinct,5],numberofsplits)
+              
+              if(mostrecentspl=="B")
+              { 
+                sistermostrecentspl = "A"
+              }
+              if(mostrecentspl=="A")
+              {
+                sistermostrecentspl = "B"
+              }
+              
+              motiftofind = paste(substring(island_spec[extinct,5],1,numberofsplits-1),sistermostrecentspl,sep = "")
+              
+              possiblesister = survivors[which(substring(island_spec[survivors,5],1,numberofsplits) == motiftofind)]
+              
+              #different rules depending on whether a B or A is removed. B going extinct is simpler because it only 
+              #carries a record of the most recent speciation			
+              if(mostrecentspl == "A")
+              {								
+                #change the splitting date of the sister species so that it inherits the early splitting that used to belong to A.
+                tochange = possiblesister[which(island_spec[possiblesister,6] == max(as.numeric(island_spec[possiblesister,6])))]
+                island_spec[tochange,6] = island_spec[extinct,6]	
+              }
+              
+              #remove the offending A/B from these species
+              island_spec[possiblesister,5] = paste(substring(island_spec[possiblesister,5],1,numberofsplits - 1),
+                                                    substring(island_spec[possiblesister,5],numberofsplits + 1,
+                                                              nchar(island_spec[possiblesister,5])),sep = "")	
+              island_spec = island_spec[-extinct,]
+            }
+          }
+          island_spec = rbind(island_spec)	
+        }
         
+        ##########################################
+        #ANAGENESIS
+        if(possible_event == 3)
+        {    
+          immi_specs = which(island_spec[,4] == "I")
+          
+          #we only allow immigrants to undergo anagenesis
+          if(length(immi_specs) == 1)
+          {
+            anagenesis = immi_specs
+          }
+          if(length(immi_specs) > 1)
+          {
+            anagenesis = DDD::sample2(immi_specs,1)
+          }
+          
+          maxspecID = maxspecID + 1
+          island_spec[anagenesis,4] = "A"
+          island_spec[anagenesis,1] = maxspecID
+          island_spec[anagenesis,7] = "Immig_parent"
+        }
+        
+        ##########################################
+        #CLADOGENESIS - this splits species into two new species - both of which receive 
+        if(possible_event == 4)
+        { 		
+          tosplit = DDD::sample2(1:length(island_spec[,1]),1)
+          
+          #if the species that speciates is cladogenetic
+          # print(island_spec)
+          if(island_spec[tosplit,4] == "C")
+          {
+            #for daughter A
+            
+            island_spec[tosplit,4] = "C"
+            island_spec[tosplit,1] = maxspecID + 1
+            oldstatus = island_spec[tosplit,5]
+            island_spec[tosplit,5] = paste(oldstatus,"A",sep = "")
+            #island_spec[tosplit,6] = timeval
+            island_spec[tosplit,7] = NA
+            
+            #for daughter B
+            island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],
+                                              "C",paste(oldstatus,"B",sep = ""),timeval,NA))
+            
+            maxspecID = maxspecID + 2
+          } else {
+            #if the species that speciates is not cladogenetic
+            
+            #for daughter A
+            
+            island_spec[tosplit,4] = "C"
+            island_spec[tosplit,1] = maxspecID + 1
+            island_spec[tosplit,5] = "A"
+            island_spec[tosplit,6] = island_spec[tosplit,3]
+            island_spec[tosplit,7] = NA
+            
+            #for daughter B
+            island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],"C","B",timeval,NA))
+            
+            maxspecID = maxspecID + 2
+          }
+        }		
       }
-
+      stt_table = rbind(stt_table,c(time - timeval,length(which(island_spec[,4] == "I")),
+                                    length(which(island_spec[,4] == "A")),length(which(island_spec[,4] == "C"))))
+    }
+    
+  } else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
+                                               island_ontogeny != "linear") ||
+                                           xor(island_ontogeny != "linear",
+                                               island_ontogeny !=  "constant"))) {
+    # Algorithm if area changes ###############
+    tmax <- Apars[2] * time # Time where area is max
+    while(timeval < tmax) {
       ext_rate <- getExtRate(t = timeval, time = time, Apars = Apars, 
                              Epars = Epars, shape = island_ontogeny, 
-                             extcutoff = extcutoff) * N
+                             extcutoff = extcutoff) * length(island_spec[,1])
       ana_rate <- laa * length(which(island_spec[,4] == "I"))
-      clado_rate <- max(c(N * (lac * MaxArea* (1 - N) / K * MaxArea), 0), na.rm = T)
+      clado_rate <- max(c(length(island_spec[,1]) * (lac * MaxArea* (1 - length(island_spec[,1])) / K * MaxArea), 0), na.rm = T)
       immig_rate <- max(c(mainland_n * gam * 
                             (1 - length(island_spec[,1])/ K * MaxArea), 0), na.rm = T)
+      # print("timeval < tmax")
+      if (timeval < tmax) {
+        # Attention! Max ext may not be at t = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ext_rate_max <- getExtRate(t = 0, time = time,
+                                   Apars = Apars, 
+                                   Epars = Epars, shape = island_ontogeny, 
+                                   extcutoff = extcutoff) * length(island_spec[,1])
+      } else {
+        timeval <- tmax
+        tmax_2 <- timeval + g * (time - timeval)
+        # print(paste0("tmax2: ", tmax_2))
+        ext_rate_max <- getExtRate(tmax, time, Apars, Epars,
+                                   shape = island_ontogeny,
+                                   extcutoff) * length(island_spec[, 1])
+        
+        # Updates max ext rate after peak area has been reached
+      }
+      if (timeval > tmax_2) {
+        timeval <- tmax_2
+        ext_rate_max <- getExtRate(tmax_2, time, Apars, Epars,
+                                   shape = island_ontogeny,
+                                   extcutoff) * length(island_spec[, 1])
+      }
       
-      totalrate <- ext_rate + ana_rate + clado_rate + immig_rate
+      
+      totalrate <- ext_rate_max + ana_rate + clado_rate + immig_rate
       dt <- rexp(1, totalrate)
-    }
-    timeval <- timeval +dt
-    
-    if(timeval <= time) {
-      
-      possible_event <- DDD::sample2(c(1:4), prob = c(immig_rate, ))
-      
-      
-      # If as rates grow, timeval falls out of MaxArea, bumps time to peak area
-      # if (timeval <= time){
-      #   if (timeval - dt < (Apars[2] * time) && timeval > (Apars[2] * time)){
-      #     timeval <- (Apars[2] * time)
-      #   } else {
-      #     if (timeval >= Apars[2] * time && timeval > timeval - dt + g *(time - timeval + dt)){
-      #       timeval <- timeval - dt + g * (time - timeval + dt)
-      #     } else {
-      #       possible_event <- sample(1:4, 1, replace = FALSE, 
-      #                                c(immig_rate, ext_rate, ana_rate, clado_rate))
-      #       print(timeval)
-      #       print(paste0("event: ", possible_event))
-      
-             
-             
-             
-             
-      ##########################################
-      #IMMIGRATION
-      if(possible_event == 1)
-      {  	
-        colonist = DDD::sample2(mainland_spec,1)
-        
-        if(length(island_spec[,1]) != 0){isitthere = which(island_spec[,1] == colonist)}
-        
-        if(length(island_spec[,1]) == 0) {isitthere = c()}
-        
-        if(length(isitthere) == 0){island_spec = rbind(island_spec,c(colonist,colonist,timeval,"I",NA,NA,NA))}
-        
-        if(length(isitthere) != 0){ island_spec[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA)}
+      # print(paste0("dt: ", dt))
+      timeval  =  timeval  + dt
+      # print(timeval)
+      event <- DDD::sample2(1:4, 1, prob = c(immig_rate, ext_rate_max, ana_rate, clado_rate))
+      cat(immig_rate, ext_rate_max, ana_rate, clado_rate, "\n")
+      if (event == 2 && runif(1) < ext_rate / ext_rate_max) {
+        possible_event <- 2
+      } else {
+        possible_event <- 0
       }
-      
-      ##########################################
-      #EXTINCTION
-      if(possible_event == 2)
-      { 	
-        extinct = DDD::sample2(1:length(island_spec[,1]),1)
-        #this chooses the row of species data to remove
+      print(possible_event)
+      if (timeval <= time) {
+        ##############
         
-        typeofspecies = island_spec[extinct,4]
-        
-        if(typeofspecies == "I")
-        {
-          island_spec = island_spec[-extinct,]
-        }
-        #remove immigrant
-        
-        if(typeofspecies == "A")
-        {
-          island_spec = island_spec[-extinct,]
-        }
-        #remove anagenetic
-        
-        if(typeofspecies == "C")
-        {
-          #remove cladogenetic
+        ##########################################
+        #IMMIGRATION
+        if(possible_event == 1)
+        {  	
+          colonist = DDD::sample2(mainland_spec,1)
           
-          #first find species with same ancestor AND arrival time
-          sisters = intersect(which(island_spec[,2] == island_spec[extinct,2]),which(island_spec[,3] == island_spec[extinct,3]))
-          survivors = sisters[which(sisters != extinct)]
+          if(length(island_spec[,1]) != 0){isitthere = which(island_spec[,1] == colonist)}
           
-          if(length(sisters) == 2)
+          if(length(island_spec[,1]) == 0) {isitthere = c()}
+          
+          if(length(isitthere) == 0){island_spec = rbind(island_spec,c(colonist,colonist,timeval,"I",NA,NA,NA))}
+          
+          if(length(isitthere) != 0){ island_spec[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA)}
+        }
+        
+        ##########################################
+        #EXTINCTION
+        if(possible_event == 2)
+        { 	
+          extinct = DDD::sample2(1:length(island_spec[,1]),1)
+          #this chooses the row of species data to remove
+          
+          typeofspecies = island_spec[extinct,4]
+          
+          if(typeofspecies == "I")
           {
-            #survivors status becomes anagenetic	
-            island_spec[survivors,4] = "A"
-            island_spec[survivors,c(5,6)] = c(NA,NA)
-            island_spec[survivors,7] = "Clado_extinct"
             island_spec = island_spec[-extinct,]
           }
+          #remove immigrant
           
-          if(length(sisters) >= 3)
-          {		
-            numberofsplits = nchar(island_spec[extinct,5])
+          if(typeofspecies == "A")
+          {
+            island_spec = island_spec[-extinct,]
+          }
+          #remove anagenetic
+          
+          if(typeofspecies == "C")
+          {
+            #remove cladogenetic
             
-            mostrecentspl = substring(island_spec[extinct,5],numberofsplits)
+            #first find species with same ancestor AND arrival time
+            sisters = intersect(which(island_spec[,2] == island_spec[extinct,2]),which(island_spec[,3] == island_spec[extinct,3]))
+            survivors = sisters[which(sisters != extinct)]
             
-            if(mostrecentspl=="B")
-            { 
-              sistermostrecentspl = "A"
-            }
-            if(mostrecentspl=="A")
+            if(length(sisters) == 2)
             {
-              sistermostrecentspl = "B"
+              #survivors status becomes anagenetic	
+              island_spec[survivors,4] = "A"
+              island_spec[survivors,c(5,6)] = c(NA,NA)
+              island_spec[survivors,7] = "Clado_extinct"
+              island_spec = island_spec[-extinct,]
             }
             
-            motiftofind = paste(substring(island_spec[extinct,5],1,numberofsplits-1),sistermostrecentspl,sep = "")
-            
-            possiblesister = survivors[which(substring(island_spec[survivors,5],1,numberofsplits) == motiftofind)]
-            
-            #different rules depending on whether a B or A is removed. B going extinct is simpler because it only 
-            #carries a record of the most recent speciation			
-            if(mostrecentspl == "A")
-            {								
-              #change the splitting date of the sister species so that it inherits the early splitting that used to belong to A.
-              tochange = possiblesister[which(island_spec[possiblesister,6] == max(as.numeric(island_spec[possiblesister,6])))]
-              island_spec[tochange,6] = island_spec[extinct,6]	
+            if(length(sisters) >= 3)
+            {		
+              numberofsplits = nchar(island_spec[extinct,5])
+              
+              mostrecentspl = substring(island_spec[extinct,5],numberofsplits)
+              
+              if(mostrecentspl=="B")
+              { 
+                sistermostrecentspl = "A"
+              }
+              if(mostrecentspl=="A")
+              {
+                sistermostrecentspl = "B"
+              }
+              
+              motiftofind = paste(substring(island_spec[extinct,5],1,numberofsplits-1),sistermostrecentspl,sep = "")
+              
+              possiblesister = survivors[which(substring(island_spec[survivors,5],1,numberofsplits) == motiftofind)]
+              
+              #different rules depending on whether a B or A is removed. B going extinct is simpler because it only 
+              #carries a record of the most recent speciation			
+              if(mostrecentspl == "A")
+              {								
+                #change the splitting date of the sister species so that it inherits the early splitting that used to belong to A.
+                tochange = possiblesister[which(island_spec[possiblesister,6] == max(as.numeric(island_spec[possiblesister,6])))]
+                island_spec[tochange,6] = island_spec[extinct,6]	
+              }
+              
+              #remove the offending A/B from these species
+              island_spec[possiblesister,5] = paste(substring(island_spec[possiblesister,5],1,numberofsplits - 1),
+                                                    substring(island_spec[possiblesister,5],numberofsplits + 1,
+                                                              nchar(island_spec[possiblesister,5])),sep = "")	
+              island_spec = island_spec[-extinct,]
             }
+          }
+          island_spec = rbind(island_spec)	
+        }
+        
+        ##########################################
+        #ANAGENESIS
+        if(possible_event == 3)
+        {    
+          immi_specs = which(island_spec[,4] == "I")
+          
+          #we only allow immigrants to undergo anagenesis
+          if(length(immi_specs) == 1)
+          {
+            anagenesis = immi_specs
+          }
+          if(length(immi_specs) > 1)
+          {
+            anagenesis = DDD::sample2(immi_specs,1)
+          }
+          
+          maxspecID = maxspecID + 1
+          island_spec[anagenesis,4] = "A"
+          island_spec[anagenesis,1] = maxspecID
+          island_spec[anagenesis,7] = "Immig_parent"
+        }
+        
+        ##########################################
+        #CLADOGENESIS - this splits species into two new species - both of which receive 
+        if(possible_event == 4)
+        { 		
+          tosplit = DDD::sample2(1:length(island_spec[,1]),1)
+          
+          #if the species that speciates is cladogenetic
+          # print(island_spec)
+          if(island_spec[tosplit,4] == "C")
+          {
+            #for daughter A
             
-            #remove the offending A/B from these species
-            island_spec[possiblesister,5] = paste(substring(island_spec[possiblesister,5],1,numberofsplits - 1),
-                                                  substring(island_spec[possiblesister,5],numberofsplits + 1,
-                                                            nchar(island_spec[possiblesister,5])),sep = "")	
-            island_spec = island_spec[-extinct,]
+            island_spec[tosplit,4] = "C"
+            island_spec[tosplit,1] = maxspecID + 1
+            oldstatus = island_spec[tosplit,5]
+            island_spec[tosplit,5] = paste(oldstatus,"A",sep = "")
+            #island_spec[tosplit,6] = timeval
+            island_spec[tosplit,7] = NA
+            
+            #for daughter B
+            island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],
+                                              "C",paste(oldstatus,"B",sep = ""),timeval,NA))
+            
+            maxspecID = maxspecID + 2
+          } else {
+            #if the species that speciates is not cladogenetic
+            
+            #for daughter A
+            
+            island_spec[tosplit,4] = "C"
+            island_spec[tosplit,1] = maxspecID + 1
+            island_spec[tosplit,5] = "A"
+            island_spec[tosplit,6] = island_spec[tosplit,3]
+            island_spec[tosplit,7] = NA
+            
+            #for daughter B
+            island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],"C","B",timeval,NA))
+            
+            maxspecID = maxspecID + 2
           }
         }
-        island_spec = rbind(island_spec)	
       }
-      
-      ##########################################
-      #ANAGENESIS
-      if(possible_event == 3)
-      {    
-        immi_specs = which(island_spec[,4] == "I")
-        print(paste0("island_spec_table: ", island_spec[,4]))
-        #we only allow immigrants to undergo anagenesis
-        if(length(immi_specs) == 1)
-        {
-          anagenesis = immi_specs
-        }
-        if(length(immi_specs) > 1)
-        {
-          anagenesis = DDD::sample2(immi_specs,1)
-        }
-        print(paste0("immi_specs: ", immi_specs))
-        maxspecID = maxspecID + 1
-        island_spec[anagenesis,4] = "A"
-        island_spec[anagenesis,1] = maxspecID
-        island_spec[anagenesis,7] = "Immig_parent"
-      }
-      
-      ##########################################
-      #CLADOGENESIS - this splits species into two new species - both of which receive 
-      if(possible_event == 4)
-      { 		
-        tosplit = DDD::sample2(1:length(island_spec[,1]),1)
-        
-        #if the species that speciates is cladogenetic
-        if(island_spec[tosplit,4] == "C")
-        {
-          #for daughter A
-          
-          island_spec[tosplit,4] = "C"
-          island_spec[tosplit,1] = maxspecID + 1
-          oldstatus = island_spec[tosplit,5]
-          island_spec[tosplit,5] = paste(oldstatus,"A",sep = "")
-          #island_spec[tosplit,6] = timeval
-          island_spec[tosplit,7] = NA
-          
-          #for daughter B
-          island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],
-                                            "C",paste(oldstatus,"B",sep = ""),timeval,NA))
-          
-          maxspecID = maxspecID + 2
-        } else {
-          #if the species that speciates is not cladogenetic
-          
-          #for daughter A
-          
-          island_spec[tosplit,4] = "C"
-          island_spec[tosplit,1] = maxspecID + 1
-          island_spec[tosplit,5] = "A"
-          island_spec[tosplit,6] = island_spec[tosplit,3]
-          island_spec[tosplit,7] = NA
-          
-          #for daughter B
-          island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],"C","B",timeval,NA))
-          
-          maxspecID = maxspecID + 2
-        }
-      }		
+      stt_table = rbind(stt_table,c(time - timeval,length(which(island_spec[,4] == "I")),
+                                    length(which(island_spec[,4] == "A")),length(which(island_spec[,4] == "C"))))
     }
-    stt_table = rbind(stt_table,c(time - timeval,length(which(island_spec[,4] == "I")),
-                                  length(which(island_spec[,4] == "A")),length(which(island_spec[,4] == "C"))))
+
+    stt_table[nrow(stt_table),1] = 0
   }
   
   
-  stt_table[nrow(stt_table),1] = 0
   
   ############# 
   ### if there are no species on the island branching_times = island_age, stac = 0, missing_species = 0 
@@ -285,11 +461,11 @@ DAISIE_sim_core <- function(time,
     island_spec[,"branching time (BP)"] = time - as.numeric(island_spec[,"branching time (BP)"])
     island_spec[,"Colonisation time (BP)"] = time - as.numeric(island_spec[,"Colonisation time (BP)"])
     
-    if(mainland_n==1) {
+    if(mainland_n == 1) {
       island <- DAISIE_ONEcolonist(time,island_spec,stt_table)
     }
     
-    if(mainland_n>1) {  
+    if(mainland_n > 1) {  
       
       ### number of colonists present
       colonists_present = sort(as.numeric(unique(island_spec[,'Mainland Ancestor'])))
@@ -395,9 +571,3 @@ DAISIE_ONEcolonist = function(time,island_spec,stt_table)
   return(descendants)  
 }
 
-
-
-
-
-
-     
