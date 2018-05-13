@@ -12,6 +12,8 @@ DAISIE_sim = function(
   Apars = NULL,
   ...) 
 {
+  
+  # ADD APARS CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!
   island_replicates  = list()
   
   if(divdepmodel =='IW')
@@ -47,6 +49,9 @@ DAISIE_sim = function(
       }
     }
   }
+
+  
+
   if(divdepmodel == 'CS')
   {
     if(length(pars) == 5)
