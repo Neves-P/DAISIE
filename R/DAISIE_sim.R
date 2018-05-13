@@ -10,54 +10,93 @@ DAISIE_sim = function(
   plot_sims = TRUE,
   island_ontogeny = NULL, # NULL = no effect; "quadratic" = quadratic function; "linear" = linear function
   Apars = NULL,
-  mu_version = NULL,
   ...) 
 {
   
   # ADD APARS CHECK!!!!!!!!!!!!!!!!!!!!!!!!!!
   island_replicates  = list()
-
+  
   if(divdepmodel =='IW')
   {
     if(length(pars) > 5)
     {
-       stop('Island-wide carrying capacity model not yet implemented for two types of mainland species')
+      stop('Island-wide carrying capacity model not yet implemented for two types of mainland species')
     }
     
     for(rep in 1:replicates)
     {
-      island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = M,pars=pars)
-      print(paste("Island replicate ",rep,sep = ""))	
-    } 
-    island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
-                                         time = time,M = M, sample_freq = sample_freq)
-  }
       
+      # Tests if input island ontogeny toggle is empty xor different than acceptable
+      if (is.null(island_ontogeny)){
+        island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = M,pars=pars)
+        print(paste("Island replicate ",rep,sep = ""))
+        
+        island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
+                                             time = time,M = M, sample_freq = sample_freq)
+        
+        # Tests if input island ontogeny toggle is empty xor different than acceptable
+      }else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
+                                                  island_ontogeny != "linear") ||
+                                              xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
+        
+        island_replicates[[rep]] <- DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontogeny = island_ontogeny)
+        print(paste("Island replicate ",rep,sep = ""))
+        
+        island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
+                                             time = time,M = M, sample_freq = sample_freq)
+      }else{
+        stop("Please insert valid ontogeny model or NULL (default) for no ontogeny.")
+      }
+    }
+  }
+
   
-  
-  
+
   if(divdepmodel == 'CS')
   {
     if(length(pars) == 5)
-    { 
+    {
       for(rep in 1:replicates)
       {
-        island_replicates[[rep]] = list() 
-        
-        full_list = list()
-        for(m_spec in 1:M) 
-        { 	
-          full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars,
-                                                 island_ontogeny = island_ontogeny, 
-                                                 Apars = Apars,
-                                                 mu_version = mu_version)
+        # Tests if input island ontogeny toggle is empty xor different than acceptable
+        if (is.null(island_ontogeny)){
+          island_replicates[[rep]] = list() 
+          
+          full_list = list()
+          # str(full_list)
+          for(m_spec in 1:M) 
+          { 	
+            full_list[[m_spec]]  = DAISIE_sim_core(time=time,mainland_n = 1,pars = pars, Apars = Apars, Epars = Epars, island_ontogeny = island_ontogeny)
+          }
+          
+          island_replicates[[rep]] = full_list
+          print(paste("Island replicate ",rep,sep = ""))	
+          
+          # Tests if input island ontogeny toggle is empty xor different than acceptable
+        }else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
+                                                    island_ontogeny != "linear") ||
+                                                xor(island_ontogeny != "linear", island_ontogeny !=  "constant"))){
+          island_replicates[[rep]] = list() 
+          
+          full_list = list()
+          # str(full_list)
+          for(m_spec in 1:M) 
+          { 	
+            full_list[[m_spec]]  = DAISIE_sim_core(time = time, mainland_n = 1, 
+                                                   pars = pars, 
+                                                   Apars = Apars,
+                                                   Epars = Epars,
+                                                   island_ontogeny = island_ontogeny)
+          }
+          
+          island_replicates[[rep]] = full_list
+          print(paste("Island replicate ",rep,sep = ""))	
+          
+        } else {
+          stop("Please insert valid ontogeny model or NULL (default) for no ontogeny.")
         }
-        
-        island_replicates[[rep]] = full_list
-        print(paste("Island replicate ",rep,sep = ""))	
       }
     }
-    
     if(length(pars) == 10)
     {
       if(is.na(prop_type2_pool))
@@ -107,6 +146,7 @@ DAISIE_sim = function(
         }
       }
     }
+
     island_replicates = DAISIE_format_CS(island_replicates = island_replicates,time = time,M = M,sample_freq = sample_freq)
   }
   if(plot_sims == TRUE)

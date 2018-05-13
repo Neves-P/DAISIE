@@ -3,36 +3,40 @@
 # 
 # Convert Apars[2] into % of time to be easily applicable. Add function to convert
 # time % to Topt
-island_area<-function(t, time, Apars, shape = NULL){
-  if(is.null(shape)){return(Apars[1])}	
+
+island_area <- function(t, time, Apars, shape){
+
+  Tmax <- time # total time
+  Amax <- Apars[1] # maximum area
+  Topt <- Apars[2] # peak position in %
+  peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
+  proptime<- t/Tmax	
+  # Constant
+  if (is.null(shape)){
+    return(Apars[1])
+  }	
   if(shape == "quadratic"){
-    if(Apars[2] > time){
-      stop("Apars[2] > time: Peak position cannot be higher than total time.")
-    }
-    Tmax <- time # total time
-    Amax <- Apars[1] # maximum area
-    Topt <- Apars[2] # peak position
-    peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
-    proptime<- t/Tmax	
-    f <- Topt/Tmax / (1 - Topt/Tmax)
-    a <- f*peak/(1+f)
-    b <- peak/(1+f) 
-    At <- Amax * proptime^a * (1 - proptime)^ b / ((a / (a + b))^a * (b / (a + b))^b)
+    # if(Apars[2] > time){
+      # stop("Apars[2] > time: Peak position cannot be higher than total time.")
+    # }
+
+    f <- Topt / (1 - Topt)
+    a <- f * peak/ ( 1 + f)
+    b <- peak / (1 + f) 
+    At <- Amax * proptime^a * (1 - proptime)^ b/ ((a / (a + b))^a * (b / (a + b))^b)
     return(At)}
   
   #Linear decline
   if(shape == "linear"){
-    Tmax <- time
-    proptime<- t/Tmax
-    b <- Apars[1] # intercept (peak area)
-    m <- -(b / Tmax) # slope
+    b <- Amax # intercept (peak area)
+    m <- -(b / Topt) # slope
     At <- m * t + b
     return(At)
   }
 }
 
 
-# Function to describe changes in extinction rate through time. Adapted from
+# Function to describe changes in extinction rate through time. From
 # Valente et al 2014 ProcB
 getExtRate <- function(t, time, Apars, Epars, shape, extcutoff){
   X <- log(Epars[1] / Epars[2]) / log(0.1)
@@ -42,4 +46,10 @@ getExtRate <- function(t, time, Apars, Epars, shape, extcutoff){
   return(extrate)
 }
 
+# sequencia <- seq(0, 10, by = 0.010)
+# plot_ext <- c()
+# for (i in 1:1000) {
+#   plot_ext[i] <-  getExtRate(sequencia[i], 10, Apars, Epars, "quadratic", 1000)
+# }
+# 
 
