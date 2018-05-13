@@ -35,16 +35,18 @@ DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
     colnames(stt_all) = c("Time","nI","nA","nC","present")
     stt_all[,"Time"] = rev(seq(from = 0,to = time,length.out = sample_freq + 1))
     stt_all[1,2:5] = c(0,0,0,0) 
-    
+    # print(stt_all)
     for(i in 2:nrow(stt_all))
     { 
       the_age = stt_all[i,"Time"]	
     	
     	store_richness_time_slice = matrix(nrow = M,ncol = 3)
     	colnames(store_richness_time_slice) = c("I","A","C")
-    	for(x in 1:M) 
+    	# print(stt_list)
+    	for(x in 1:M)
     	{
         store_richness_time_slice[x,] = stt_list[[x]][max(which(stt_list[[x]][,"Time"] >= the_age)),2:4]
+        # print(store_richness_time_slice[x,])
       }
       count_time_slice = store_richness_time_slice[,1] + store_richness_time_slice[,2] + store_richness_time_slice[,3]
       present_time_slice = rep(0,M)

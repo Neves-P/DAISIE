@@ -272,7 +272,7 @@ DAISIE_sim_core <- function(time,
       timeval  =  timeval  + dt
       # print(timeval)
       event <- DDD::sample2(1:4, 1, prob = c(immig_rate, ext_rate_max, ana_rate, clado_rate))
-      cat(immig_rate, ext_rate_max, ana_rate, clado_rate, "\n")
+      # cat(immig_rate, ext_rate_max, ana_rate, clado_rate, "\n")
       
       if (event == 2) {
         if (ext_rate_max == 0) {
