@@ -46,4 +46,10 @@ getExtRate <- function(t, time, Apars, Epars, shape, extcutoff){
   return(extrate)
 }
 
+# sequencia <- seq(0, 10, by = 0.010)
+# plot_ext <- c()
+# for (i in 1:1000) {
+#   plot_ext[i] <-  getExtRate(sequencia[i], 10, Apars, Epars, "quadratic", 1000)
+# }
+# 
 
