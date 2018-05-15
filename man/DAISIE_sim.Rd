@@ -19,8 +19,7 @@ DAISIE_sim(
    sample_freq = 25,
    plot_sims = TRUE,
    island_ontogeny = NULL,
-   Apars = NULL,
-   mu_version = NULL,
+   Apars = NULL
    ...)
 }
 

@@ -11,6 +11,9 @@ DAISIE_sim_core <- function(totaltime,
   gam <- pars[4]
   laa <- pars[5]
   
+  extcutoff <- max(1000, 1000 * (laa + lac + gam))
+  ext_multiplier <- 0.5
+  
   if(pars[4] == 0) 
   {
     stop('Rate of colonisation is zero. Island cannot be colonised.')
