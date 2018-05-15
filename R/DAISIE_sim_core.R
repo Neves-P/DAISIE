@@ -75,6 +75,7 @@ DAISIE_sim_core <- function(totaltime,
     thor <- time_area_max
     
     # Determine rates
+    Epars <- c(mu, mu + mu / 2)
     ext_rate <- getExtRate(t = timeval, totaltime = totaltime, Apars = Apars, 
                            Epars = Epars, shape = island_ontogeny, 
                            extcutoff = extcutoff) * length(island_spec[, 1])
