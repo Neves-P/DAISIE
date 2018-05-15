@@ -32,10 +32,28 @@ island_area <- function(t, totaltime, Apars, shape){
 
 # Function to describe changes in extinction rate through time. From
 # Valente et al 2014 ProcB
-getExtRate <- function(t, totaltime, Apars, Epars, shape, extcutoff){
+get_ext_rate <- function(t, totaltime, Apars, Epars, shape, extcutoff){
   X <- log(Epars[1] / Epars[2]) / log(0.1)
   extrate <- Epars[1]/((island_area(t, totaltime, Apars, shape) / Apars[1])^X)
   extrate[which(extrate > extcutoff)] <- extcutoff
   extrate[which(extrate > extcutoff)] <- extcutoff
   return(extrate)
 }
+
+# Function to calculate anagenesis rate given number of immigrant species
+get_ana_rate <- function(laa, island_spec) {
+  ana_rate = laa * length(which(island_spec[,4] == "I"))
+  return(ana_rate)
+} 
+
+# Function to calculate cladogenesis rate given number of island species
+get_clado_rate <- function(lac, island_spec, K) {
+  clado_rate = max(c(length(island_spec[,1]) * (lac * (1 - length(island_spec[, 1]) / K)), 0), na.rm = T)
+  return(clado_rate)
+}
+
+get_immig_rate <- function(gam, island_spec, K, manland_n) {
+  immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
+}
+
+

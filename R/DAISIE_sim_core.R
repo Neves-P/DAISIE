@@ -1,10 +1,11 @@
-DAISIE_sim_core <- function(totaltime,
+DAISIE_sim_core <- function(time,
                             mainland_n,
                             pars,
                             Apars = NULL,
                             Epars = NULL,
                             island_ontogeny = NULL)
 {
+  totaltime <- time
   lac <- pars[1]
   mu <- pars[2]
   K <- pars[3]

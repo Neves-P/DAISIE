@@ -1,5 +1,5 @@
 DAISIE_sim = function(
-  totaltime,
+  time,
   M,
   pars,
   replicates,
@@ -13,6 +13,7 @@ DAISIE_sim = function(
   Epars = NULL,
   ...) 
 {
+  totaltime <- time
   island_replicates  = list()
   
   if(divdepmodel =='IW')
