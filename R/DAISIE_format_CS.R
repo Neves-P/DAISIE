@@ -1,5 +1,6 @@
-DAISIE_format_CS = function(island_replicates,totaltime,M,sample_freq)
+DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
 {
+  totaltime <- time
   several_islands = list()
   
   for(rep in 1:length(island_replicates)) 
