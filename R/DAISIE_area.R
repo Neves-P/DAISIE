@@ -79,6 +79,7 @@ get_thor <- function(timeval, totaltime, Apars, ext_multiplier, island_ontogeny,
     } else if (timeval >= thor) {
       
       thor <- timeval + ext_multiplier * (totaltime - timeval)
+      thor <- min(totaltime, thor)
     } 
   }
 
