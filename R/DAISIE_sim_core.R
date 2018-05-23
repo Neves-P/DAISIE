@@ -2,6 +2,7 @@ DAISIE_sim_core <- function(time,
                             mainland_n,
                             pars,
                             Apars = NULL,
+                            Epars = NULL,
                             island_ontogeny = NULL)
 {
   timeval <- 0
@@ -27,8 +28,6 @@ DAISIE_sim_core <- function(time,
   if (!is.null(island_ontogeny) && island_ontogeny != "linear" && island_ontogeny != "quadratic") {
     stop("Please select valid island ontogeny model. \n Options are no ontogeny: NULL, 'linear' or 'quadratic'.")
   }
-  
-  
   
   mainland_spec <- seq(1,mainland_n,1)
   maxspecID <- mainland_n
@@ -86,89 +85,71 @@ DAISIE_sim_core <- function(time,
   # thor <- min(time_area_max, totaltime)
   # 
   # Determine rates
-
-
-  ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu, Apars = Apars, 
-                           shape = island_ontogeny, 
-                           extcutoff = extcutoff, island_spec = island_spec)
-  ext_rate_max <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu,
-                               Apars = Apars, 
-                               shape = island_ontogeny, 
-                               extcutoff = extcutoff, island_spec = island_spec)
-
-  # ana_rate = laa * length(which(island_spec[,4] == "I"))
-  ana_rate <- get_ana_rate(laa, island_spec)
-  # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-  clado_rate <- get_clado_rate(lac, island_spec, K)
-  # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-  immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n = mainland_n)
   
+  
+  rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
+                        mu = mu, laa = laa, lac = lac, Apars = Apars,
+                        Epars = Epars, island_ontogeny = island_ontogeny, 
+                        extcutoff = extcutoff, K = K,
+                        island_spec = island_spec, mainland_n, thor)
+  # print(rates)
   
   # Pick thor (before timeval, to set Amax thor)
-  thor <- get_thor(timeval, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
+  thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
   # Pick timeval
-  totalrate <- ext_rate_max + ana_rate + clado_rate + immig_rate
-  dt <- rexp(1, totalrate)
-  timeval <- timeval + dt
-
-
+  timeval <- pick_timeval(rates, timeval)
+  
+  
   # Checks if timeval is larger than thor from the start and jumps simulation
   # to thor if that's the case from the start. 
-  if (timeval > totaltime) {
-    timeval <- thor
-  }
+  # if (timeval > totaltime) {
+  #   timeval <- thor
+  # }
   
   while(timeval <= totaltime) {
     if (timeval < thor) {
       # Determine event
-      event <- DDD::sample2(1:4, 1, prob = c(immig_rate, ext_rate_max,
-                                             ana_rate, clado_rate),
-                            replace = FALSE)
       
-      if (event == 2) {
-        if (ext_rate_max == 0) {
-          possible_event <- 0
-        } else {
-          possible_event <- 2 * (runif(1) < ext_rate / ext_rate_max) # event is indeed extinction
-        }
-      } else {
-        possible_event <- event
-      }
+      possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
+                                                      rates[[3]], rates[[4]], 
+                                                      rates[[5]] - rates[[2]]),
+                                     replace = FALSE)
       
       # Run event
-      new_state <- DAISIE_sim_update_state(timeval, possible_event, maxspecID, mainland_spec, island_spec)
+      new_state <- DAISIE_sim_update_state(timeval, possible_event, maxspecID,
+                                           mainland_spec, island_spec)
       island_spec <- new_state$island_spec
       maxspecID <- new_state$maxspecID
       
-      # Update state
-      stt_table <- rbind(stt_table, c(totaltime - timeval,
-                                      length(which(island_spec[, 4] == "I")),
-                                      length(which(island_spec[, 4] == "A")),
-                                      length(which(island_spec[, 4] == "C"))))
       
-      # Recalculate rates
-      ext_rate_max <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu,
-                                   Apars = Apars, 
-                                   shape = island_ontogeny,
-                                   extcutoff = extcutoff, island_spec = island_spec)
-      ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, Apars = Apars, mu,
-                               shape = island_ontogeny,
-                               extcutoff = extcutoff, island_spec = island_spec)
-      # ana_rate = laa * length(which(island_spec[,4] == "I"))
-      ana_rate <- get_ana_rate(laa, island_spec)
-      # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-      clado_rate <- get_clado_rate(lac, island_spec, K)
-      # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-      immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n)
+      # Recalculate rates #### MAKE THIS A FUNCTION
+      # ext_rate_max <- get_ext_rate(timeval = timeval, totaltime = totaltime,
+      #                              mu = mu,
+      #                              Apars = Apars, Epars = Epars, 
+      #                              island_function_shape = island_ontogeny,
+      #                              extcutoff = extcutoff, island_spec = island_spec)
+      # ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, Apars = Apars,
+      #                          mu,
+      #                          island_function_shape = island_ontogeny,
+      #                          extcutoff = extcutoff, island_spec = island_spec)
+      # # ana_rate = laa * length(which(island_spec[,4] == "I"))
+      # ana_rate <- get_ana_rate(laa, island_spec)
+      # # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
+      # clado_rate <- get_clado_rate(lac, island_spec, K)
+      # # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
+      # immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n)
       
-      totalrate <- ext_rate_max + ana_rate + immig_rate + clado_rate
-      dt <- rexp(1, totalrate)
-      timeval <- timeval + dt
+      rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
+                            mu = mu, laa = laa, lac = lac, Apars = Apars,
+                            Epars = Epars, island_ontogeny, 
+                            extcutoff = extcutoff, K = K,
+                            island_spec = island_spec, mainland_n, thor)
+      
+      timeval <- pick_timeval(rates, timeval)
       
       ##### After thor is reached ####
       
     } else {
-      
       
       # Update timeval
       
@@ -176,43 +157,45 @@ DAISIE_sim_core <- function(time,
       
       # Recalculate thor
       # thor <- timeval + ext_multiplier * (totaltime - timeval)
-      thor <- get_thor(timeval, totaltime, Apars, ext_multiplier, island_ontogeny, thor)
-      
-      # Recalculate rates
-      ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu,
-                               Apars = Apars, 
-                               shape = island_ontogeny,
-                               extcutoff = extcutoff, island_spec = island_spec)
-      
-      ext_rate_max <- get_ext_rate(timeval = thor, totaltime = totaltime, mu,
-                                   Apars = Apars, 
-                                   shape = island_ontogeny,
-                                   extcutoff = extcutoff, island_spec = island_spec)
-      
-      # ana_rate = laa * length(which(island_spec[,4] == "I"))
-      ana_rate <- get_ana_rate(laa, island_spec)
-      # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-      clado_rate <- get_clado_rate(lac, island_spec, K)
-      # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-      immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n)
-      
-      # Determine timeval
-      totalrate <- ext_rate_max + ana_rate + immig_rate + clado_rate
-      dt <- rexp(1, totalrate)
-      timeval <- timeval + dt
-      
-      # Update stt table
-      stt_table = rbind(stt_table,
-                        c(totaltime - timeval,
-                          length(which(island_spec[, 4] == "I")),
-                          length(which(island_spec[, 4] == "A")),
-                          length(which(island_spec[, 4] == "C"))))
-
+      thor <- get_thor(timeval, totaltime, Apars, ext_multiplier,
+                       island_ontogeny, thor)
     }
+    # # Recalculate rates #### AS BEFORE 
+    # ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu,
+    #                          Apars = Apars, 
+    #                          island_function_shape = island_ontogeny,
+    #                          extcutoff = extcutoff, island_spec = island_spec)
+    # 
+    # ext_rate_max <- get_ext_rate(timeval = thor, totaltime = totaltime, mu,
+    #                              Apars = Apars, 
+    #                              island_function_shape = island_ontogeny,
+    #                              extcutoff = extcutoff, island_spec = island_spec)
+    # 
+    # # ana_rate = laa * length(which(island_spec[,4] == "I"))
+    # ana_rate <- get_ana_rate(laa, island_spec)
+    # # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
+    # clado_rate <- get_clado_rate(lac, island_spec, K)
+    # # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
+    # immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n)
+    
+    # Determine timeval and update rates
+    # timeval <- pick_timeval(rates, timeval)
+    stt_table = rbind(stt_table,
+                      c(totaltime - timeval,
+                        length(which(island_spec[, 4] == "I")),
+                        length(which(island_spec[, 4] == "A")),
+                        length(which(island_spec[, 4] == "C"))))
   }
-
-  stt_table[nrow(stt_table),1] <- 0
-
+  # Update stt table
+  stt_table = rbind(stt_table,
+                    c(0,
+                      length(which(island_spec[, 4] == "I")),
+                      length(which(island_spec[, 4] == "A")),
+                      length(which(island_spec[, 4] == "C"))))
+  
+  
+  # stt_table[nrow(stt_table),1] <- 0
+  
   ############# 
   ### if there are no species on the island branching_times = island_age, stac = 0, missing_species = 0 
   if(length(island_spec[,1]) == 0)
@@ -255,6 +238,68 @@ DAISIE_sim_core <- function(time,
     }
   }
   return(island) 
+}
+
+
+
+update_rates <- function(timeval, totaltime,
+                         gam, mu, laa, lac, Apars, Epars,
+                         island_ontogeny, 
+                         extcutoff,
+                         K, 
+                         island_spec, mainland_n, thor) {
+  # Function to calculate rates at time = timeval. Returns list with each rate.
+  
+  
+  immig_rate <- get_immig_rate(timeval = timeval, totaltime = totaltime,
+                               gam = gam, Apars = Apars, Epars = Epars,
+                               island_function_shape = island_ontogeny, 
+                               extcutoff = extcutoff, island_spec = island_spec,
+                               K = K, mainland_n = mainland_n)
+  
+  ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu = mu,
+                           Apars = Apars, Epars = Epars, 
+                           island_function_shape = island_ontogeny, 
+                           extcutoff = extcutoff, island_spec = island_spec,
+                           K = K)
+  
+  
+  
+  ana_rate <- get_ana_rate(timeval = timeval, totaltime = totaltime, laa = laa,
+                           Apars = Apars, Epars = Epars,
+                           island_function_shape = island_ontogeny, 
+                           extcutoff = extcutoff, island_spec = island_spec,
+                           K = K)
+  
+  clado_rate <- get_clado_rate(timeval = timeval, totaltime = totaltime,
+                               lac = lac, Apars = Apars, Epars = Epars,
+                               island_function_shape = island_ontogeny, 
+                               extcutoff = extcutoff, island_spec = island_spec,
+                               K = K)
+  
+  if (is.null(island_ontogeny)) {
+    ext_rate_max <- ext_rate
+  } else if((Apars[2] * totaltime) > timeval) {
+    ext_rate_max <- ext_rate
+  } else {
+    
+    ext_rate_max <- get_ext_rate(timeval = thor, totaltime = totaltime, mu = mu,
+                                 Apars = Apars, Epars = Epars,
+                                 island_function_shape = island_ontogeny, 
+                                 extcutoff = extcutoff, island_spec = island_spec,
+                                 K = K)
+  }
+  
+  rates <- list(immig_rate, ext_rate, ana_rate, clado_rate, ext_rate_max)
+  return(rates)
+}
+
+pick_timeval <- function(rates, timeval) {
+  # Calculates when next event will happen
+  totalrate <- rates[[1]] + rates[[2]] + rates[[3]] + rates[[5]]
+  dt <- rexp(1, totalrate)
+  timeval <- timeval + dt
+  return(timeval)
 }
 
 DAISIE_sim_update_state <- function(timeval, possible_event,maxspecID,mainland_spec,island_spec)
@@ -420,8 +465,12 @@ DAISIE_sim_update_state <- function(timeval, possible_event,maxspecID,mainland_s
       island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],"C","B",timeval,NA))
       
       maxspecID = maxspecID + 2
-    }
+    } 
   }
+  if (possible_event > 4) {
+    # Nothing happens
+  }
+  
   return(list(island_spec = island_spec,maxspecID = maxspecID))
 }
 
