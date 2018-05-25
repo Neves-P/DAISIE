@@ -83,9 +83,10 @@ DAISIE_sim_core <- function(time,
   # 
   # time_area_max <- Apars[2] * totaltime # totaltime where area is max
   # thor <- min(time_area_max, totaltime)
-  # 
+
   # Determine rates
-  
+  # Pick thor (before timeval, to set Amax thor)
+  thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
   
   rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
                         mu = mu, laa = laa, lac = lac, Apars = Apars,
@@ -94,8 +95,8 @@ DAISIE_sim_core <- function(time,
                         island_spec = island_spec, mainland_n, thor)
   # print(rates)
   
-  # Pick thor (before timeval, to set Amax thor)
-  thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
+
+
   # Pick timeval
   timeval <- pick_timeval(rates, timeval)
   
