@@ -238,7 +238,6 @@ DAISIE_sim_core <- function(time,
       island <- list(stt_table = stt_table, taxon_list = island_clades_info)
     }
   }
-  print(event)
   return(island)
 
 }
