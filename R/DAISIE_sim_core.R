@@ -106,7 +106,7 @@ DAISIE_sim_core <- function(time,
   # if (timeval > totaltime) {
   #   timeval <- thor
   # }
-  
+  event <- c()
   while(timeval <= totaltime) {
     if (timeval < thor) {
       # Determine event
@@ -115,7 +115,7 @@ DAISIE_sim_core <- function(time,
                                                       rates[[3]], rates[[4]], 
                                                       rates[[5]] - rates[[2]]),
                                      replace = FALSE)
-      
+      event[i] <- possible_event
       # Run event
       new_state <- DAISIE_sim_update_state(timeval, possible_event, maxspecID,
                                            mainland_spec, island_spec)
@@ -238,7 +238,9 @@ DAISIE_sim_core <- function(time,
       island <- list(stt_table = stt_table, taxon_list = island_clades_info)
     }
   }
-  return(island) 
+  print(event)
+  return(island)
+
 }
 
 
