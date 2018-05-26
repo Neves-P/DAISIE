@@ -43,7 +43,7 @@ DAISIE_sim_core <- function(time,
   # Pick thor (before timeval, to set Amax thor)
   thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
   
-  rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
+  rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
                         mu = mu, laa = laa, lac = lac, Apars = Apars,
                         Epars = Epars, island_ontogeny = island_ontogeny, 
                         extcutoff = extcutoff, K = K,
@@ -78,23 +78,6 @@ DAISIE_sim_core <- function(time,
       maxspecID <- new_state$maxspecID
       
       
-      # Recalculate rates #### MAKE THIS A FUNCTION
-      # ext_rate_max <- get_ext_rate(timeval = timeval, totaltime = totaltime,
-      #                              mu = mu,
-      #                              Apars = Apars, Epars = Epars, 
-      #                              island_function_shape = island_ontogeny,
-      #                              extcutoff = extcutoff, island_spec = island_spec)
-      # ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, Apars = Apars,
-      #                          mu,
-      #                          island_function_shape = island_ontogeny,
-      #                          extcutoff = extcutoff, island_spec = island_spec)
-      # # ana_rate = laa * length(which(island_spec[,4] == "I"))
-      # ana_rate <- get_ana_rate(laa, island_spec)
-      # # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-      # clado_rate <- get_clado_rate(lac, island_spec, K)
-      # # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-      # immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n)
-      
       rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
                             mu = mu, laa = laa, lac = lac, Apars = Apars,
                             Epars = Epars, island_ontogeny = island_ontogeny, 
@@ -113,8 +96,8 @@ DAISIE_sim_core <- function(time,
       
       # Recalculate thor
       # thor <- timeval + ext_multiplier * (totaltime - timeval)
-      thor <- get_thor(timeval, totaltime, Apars, ext_multiplier,
-                       island_ontogeny, thor)
+      thor <- get_thor(timeval = timeval, totaltime = totaltime, Apars = Apars, ext_multiplier = ext_multiplier,
+                       island_ontogeny = island_ontogeny, thor = thor)
     }
     
     # Determine timeval and update rates
@@ -126,9 +109,10 @@ DAISIE_sim_core <- function(time,
                         length(which(island_spec[, 4] == "C"))))
   }
   # Update stt table
-  if (stt_table[nrow(stt_table), 1] < 0) {
-    stt_table[nrow(stt_table),1] <- 0
-  }
+  # if (stt_table[nrow(stt_table), 1] < 0) {
+  #   stt_table[nrow(stt_table),1] <- 0
+  #   print("hey1")
+  # }
   if (stt_table[nrow(stt_table), 1] == totaltime) {
     stt_table = rbind(stt_table,
                       c(0,
@@ -149,13 +133,13 @@ DAISIE_sim_core <- function(time,
     island <- list(stt_table = stt_table, branching_times = totaltime, stac = 0, missing_species = 0)
   } else
   {
-    cnames <- c("Species","Mainland Ancestor","Colonisation totaltime (BP)",
-                "Species type","branch_code","branching totaltime (BP)","Anagenetic_origin")
+    cnames <- c("Species","Mainland Ancestor","Colonisation time (BP)",
+                "Species type","branch_code","branching time (BP)","Anagenetic_origin")
     colnames(island_spec) <- cnames
     
     ### set ages as counting backwards from present
-    island_spec[,"branching totaltime (BP)"] <- totaltime - as.numeric(island_spec[,"branching totaltime (BP)"])
-    island_spec[,"Colonisation totaltime (BP)"] <- totaltime - as.numeric(island_spec[,"Colonisation totaltime (BP)"])
+    island_spec[,"branching time (BP)"] <- totaltime - as.numeric(island_spec[,"branching time (BP)"])
+    island_spec[,"Colonisation time (BP)"] <- totaltime - as.numeric(island_spec[,"Colonisation time (BP)"])
     
     if(mainland_n == 1)
     {
@@ -425,7 +409,7 @@ DAISIE_ONEcolonist <- function(totaltime,island_spec,stt_table)
 {
   
   ### number of independent colonisations
-  uniquecolonisation <- as.numeric(unique(island_spec[,"Colonisation totaltime (BP)"]))
+  uniquecolonisation <- as.numeric(unique(island_spec[,"Colonisation time (BP)"]))
   number_colonisations <- length(uniquecolonisation) 
   
   ### if there is only one independent colonisation - anagenetic and cladogenetic
@@ -435,21 +419,21 @@ DAISIE_ONEcolonist <- function(totaltime,island_spec,stt_table)
     if(island_spec[1,"Species type"] == "I")
     {
       descendants <- list(stt_table = stt_table, 
-                          branching_times = c(totaltime,as.numeric(island_spec[1,"Colonisation totaltime (BP)"])),
+                          branching_times = c(totaltime,as.numeric(island_spec[1,"Colonisation time (BP)"])),
                           stac = 4,
                           missing_species = 0)
     }
     if(island_spec[1,"Species type"] == "A")
     {
       descendants <- list(stt_table = stt_table,
-                          branching_times = c(totaltime,as.numeric(island_spec[1,"Colonisation totaltime (BP)"])),
+                          branching_times = c(totaltime,as.numeric(island_spec[1,"Colonisation time (BP)"])),
                           stac = 2,
                           missing_species = 0)
     } 
     if(island_spec[1,"Species type"] == "C")
     {
       descendants <- list(stt_table = stt_table,
-                          branching_times = c(totaltime,rev(sort(as.numeric(island_spec[,"branching totaltime (BP)"])))),
+                          branching_times = c(totaltime,rev(sort(as.numeric(island_spec[,"branching time (BP)"])))),
                           stac = 2,
                           missing_species = 0)
     }
@@ -463,52 +447,54 @@ DAISIE_ONEcolonist <- function(totaltime,island_spec,stt_table)
                         other_clades_same_ancestor = list())
     
     ### create table with information on other clades with same ancestor, but this information is not used in DAISIE_ML
-    oldest <- which(as.numeric(island_spec[,"Colonisation totaltime (BP)"]) == max(as.numeric(island_spec[,"Colonisation totaltime (BP)"])))
+    oldest <- which(as.numeric(island_spec[,"Colonisation time (BP)"]) == max(as.numeric(island_spec[,"Colonisation time (BP)"])))
     
     oldest_table <- island_spec[oldest,]
+    # print(oldest_table)
     if(class(oldest_table) == 'character')
     { 
       oldest_table <- t(as.matrix(oldest_table))
     }
     if(oldest_table[1,'Species type'] == 'A')
     {
-      descendants$branching_times <- c(totaltime, as.numeric(oldest_table[1,"Colonisation totaltime (BP)"]))
+      descendants$branching_times <- c(totaltime, as.numeric(oldest_table[1,"Colonisation time (BP)"]))
     } else if(oldest_table[1,'Species type'] == 'C')
     {
-      descendants$branching_times <- c(totaltime, rev(sort(as.numeric(oldest_table[,'branching totaltime (BP)']))))
+      descendants$branching_times <- c(totaltime, rev(sort(as.numeric(oldest_table[,'branching time (BP)']))))
     }
     
     youngest_table = island_spec[-oldest,]
+    # print(youngest_table)
     if(class(youngest_table) == 'character')
     {
       youngest_table <- t(as.matrix(youngest_table))
     }
     
-    uniquecol <- as.numeric(unique(youngest_table[,"Colonisation totaltime (BP)"]))
+    uniquecol <- as.numeric(unique(youngest_table[,"Colonisation time (BP)"]))
     
     descendants$missing_species <- length(which(youngest_table[,"Species type"]!='I'))
-    
+    # print(length(which(youngest_table[,"Species type"]!='I')))
     for(colonisation in 1:length(uniquecol))
     {
       descendants$other_clades_same_ancestor[[colonisation]] <- list(brts_miss = NA,species_type = NA)	
       
-      samecolonisation <- which(as.numeric(youngest_table[,"Colonisation totaltime (BP)"]) == uniquecol[colonisation])
+      samecolonisation <- which(as.numeric(youngest_table[,"Colonisation time (BP)"]) == uniquecol[colonisation])
       
       if(youngest_table[samecolonisation[1],"Species type"] == "I")
       {
         descendants$stac <- 3
-        descendants$other_clades_same_ancestor[[colonisation]]$brts_miss <- as.numeric(youngest_table[samecolonisation,"Colonisation totaltime (BP)"])
+        descendants$other_clades_same_ancestor[[colonisation]]$brts_miss <- as.numeric(youngest_table[samecolonisation,"Colonisation time (BP)"])
         descendants$other_clades_same_ancestor[[colonisation]]$species_type <- "I"
       } else if(youngest_table[samecolonisation[1],"Species type"] == "A")
       {
-        descendants$other_clades_same_ancestor[[colonisation]]$brts_miss <- as.numeric(youngest_table[samecolonisation,"Colonisation totaltime (BP)"])
+        descendants$other_clades_same_ancestor[[colonisation]]$brts_miss <- as.numeric(youngest_table[samecolonisation,"Colonisation time (BP)"])
         descendants$other_clades_same_ancestor[[colonisation]]$species_type <- "A"
       } else if (youngest_table[samecolonisation[1],"Species type"] == "C")
       {
-        descendants$other_clades_same_ancestor[[colonisation]]$brts_miss <- rev(sort(as.numeric(youngest_table[samecolonisation,"branching totaltime (BP)"])))
+        descendants$other_clades_same_ancestor[[colonisation]]$brts_miss <- rev(sort(as.numeric(youngest_table[samecolonisation,"branching time (BP)"])))
         descendants$other_clades_same_ancestor[[colonisation]]$species_type <- "C"
       }
     }
   }
-  return(descendants)  
+  return(descendants)
 }

@@ -46,6 +46,7 @@ DAISIE_sim = function(
         { 	
           full_list[[m_spec]]  = DAISIE_sim_core(time=totaltime,mainland_n = 1,pars,
                                                  island_ontogeny = island_ontogeny, Apars = Apars, Epars = Epars)
+          # print(full_list)
         }
         
         island_replicates[[rep]] = full_list
