@@ -37,52 +37,7 @@ DAISIE_sim_core <- function(time,
   colnames(stt_table) <- c("Time","nI","nA","nC")
   stt_table[1,] <- c(totaltime,0,0,0)
   
-  # #### Algorithm with no area changes ####
-  # if (is.null(island_ontogeny)) {
-  # while(timeval < totaltime)
-  # {  	
-  # 	# ext_rate <- mu * length(island_spec[,1])
-  # 	ana_rate <- laa * length(which(island_spec[,4] == "I"))
-  # 	clado_rate <- max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-  # 	immig_rate <- max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-  # 
-  # 	totalrate <- ext_rate + clado_rate + ana_rate + immig_rate
-  # 	dt <- rexp(1,totalrate)
-  # 	
-  # 	timeval <- timeval + dt
-  # 	
-  # 	possible_event <- sample(1:4,1,replace=FALSE,c(immig_rate,ext_rate,ana_rate,clado_rate))
-  # 
-  #   ##############
-  #   if(timeval <= totaltime)
-  # 	{ 
-  # 	  new_state <- DAISIE_sim_update_state(timeval, possible_event,maxspecID,mainland_spec,island_spec)
-  # 	  island_spec <- new_state$island_spec
-  # 	  maxspecID <- new_state$maxspecID
-  # 	}
-  #   stt_table <- rbind(stt_table,
-  #     c(totaltime - timeval,
-  #       length(which(island_spec[,4] == "I")),
-  #       length(which(island_spec[,4] == "A")),
-  #       length(which(island_spec[,4] == "C"))
-  #       )
-  #     )
-  # }
-  # 
-  # stt_table[nrow(stt_table),1] <- 0
-  # 
-  ######## Algorithm if area changes ########
-  # } else if (!is.null(island_ontogeny) && (xor(island_ontogeny != "quadratic", 
-  #                                              island_ontogeny != "linear") ||
-  #                                          xor(island_ontogeny != "linear",
-  #                                              island_ontogeny !=  "constant"))) {
-  #   
-  # 
-  # Determine totaltime where A is max and thor (horizon totaltime to change rates)
-  
-  # 
-  # time_area_max <- Apars[2] * totaltime # totaltime where area is max
-  # thor <- min(time_area_max, totaltime)
+ 
 
   # Determine rates
   # Pick thor (before timeval, to set Amax thor)
@@ -101,12 +56,8 @@ DAISIE_sim_core <- function(time,
   timeval <- pick_timeval(rates, timeval)
   
   
-  # Checks if timeval is larger than thor from the start and jumps simulation
-  # to thor if that's the case from the start. 
-  # if (timeval > totaltime) {
-  #   timeval <- thor
-  # }
-  event <- c()
+
+  # event <- c()
   while(timeval <= totaltime) {
     if (timeval < thor) {
       # Determine event
@@ -115,8 +66,12 @@ DAISIE_sim_core <- function(time,
                                                       rates[[3]], rates[[4]], 
                                                       rates[[5]] - rates[[2]]),
                                      replace = FALSE)
-      event[i] <- possible_event
+       
+       # write.table(possible_event, file = "event_no_ont.csv", append = TRUE, col.names = FALSE, row.names = FALSE)
+
       # Run event
+      # cat(timeval, "\t", "ex:", "\t",  rates[[2]], "\t", "an:", "\t", rates[[3]], "\t", "cl:", "\t", rates[[4]], "\t", "imm:", "\t", rates[[1]], "\n")
+      
       new_state <- DAISIE_sim_update_state(timeval, possible_event, maxspecID,
                                            mainland_spec, island_spec)
       island_spec <- new_state$island_spec
@@ -142,9 +97,9 @@ DAISIE_sim_core <- function(time,
       
       rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
                             mu = mu, laa = laa, lac = lac, Apars = Apars,
-                            Epars = Epars, island_ontogeny, 
+                            Epars = Epars, island_ontogeny = island_ontogeny, 
                             extcutoff = extcutoff, K = K,
-                            island_spec = island_spec, mainland_n, thor)
+                            island_spec = island_spec, mainland_n = mainland_n, thor = thor)
       
       timeval <- pick_timeval(rates, timeval)
       
@@ -161,23 +116,6 @@ DAISIE_sim_core <- function(time,
       thor <- get_thor(timeval, totaltime, Apars, ext_multiplier,
                        island_ontogeny, thor)
     }
-    # # Recalculate rates #### AS BEFORE 
-    # ext_rate <- get_ext_rate(timeval = timeval, totaltime = totaltime, mu,
-    #                          Apars = Apars, 
-    #                          island_function_shape = island_ontogeny,
-    #                          extcutoff = extcutoff, island_spec = island_spec)
-    # 
-    # ext_rate_max <- get_ext_rate(timeval = thor, totaltime = totaltime, mu,
-    #                              Apars = Apars, 
-    #                              island_function_shape = island_ontogeny,
-    #                              extcutoff = extcutoff, island_spec = island_spec)
-    # 
-    # # ana_rate = laa * length(which(island_spec[,4] == "I"))
-    # ana_rate <- get_ana_rate(laa, island_spec)
-    # # clado_rate = max(c(length(island_spec[,1]) * (lac * (1 -length(island_spec[,1])/K)),0),na.rm = T)
-    # clado_rate <- get_clado_rate(lac, island_spec, K)
-    # # immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K),0),na.rm = T)
-    # immig_rate <- get_immig_rate(gam, island_spec, K, mainland_n)
     
     # Determine timeval and update rates
     # timeval <- pick_timeval(rates, timeval)
@@ -188,15 +126,22 @@ DAISIE_sim_core <- function(time,
                         length(which(island_spec[, 4] == "C"))))
   }
   # Update stt table
-  stt_table = rbind(stt_table,
-                    c(0,
-                      length(which(island_spec[, 4] == "I")),
-                      length(which(island_spec[, 4] == "A")),
-                      length(which(island_spec[, 4] == "C"))))
+  if (stt_table[nrow(stt_table), 1] < 0) {
+    stt_table[nrow(stt_table),1] <- 0
+  }
+  if (stt_table[nrow(stt_table), 1] == totaltime) {
+    stt_table = rbind(stt_table,
+                      c(0,
+                        length(which(island_spec[, 4] == "I")),
+                        length(which(island_spec[, 4] == "A")),
+                        length(which(island_spec[, 4] == "C"))))
+  }
+
+  
+
   
   
-  # stt_table[nrow(stt_table),1] <- 0
-  
+  # print(stt_table)
   ############# 
   ### if there are no species on the island branching_times = island_age, stac = 0, missing_species = 0 
   if(length(island_spec[,1]) == 0)
@@ -238,8 +183,8 @@ DAISIE_sim_core <- function(time,
       island <- list(stt_table = stt_table, taxon_list = island_clades_info)
     }
   }
+  # save(event, file = "event_no_ont.RData")
   return(island)
-
 }
 
 
