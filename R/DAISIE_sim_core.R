@@ -43,25 +43,34 @@ DAISIE_sim_core <- function(time,
   # Pick thor (before timeval, to set Amax thor)
   thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
   
-  rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
-                        mu = mu, laa = laa, lac = lac, Apars = Apars,
-                        Epars = Epars, island_ontogeny = island_ontogeny, 
-                        extcutoff = extcutoff, K = K,
-                        island_spec = island_spec, mainland_n, thor)
+  # rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
+  #                       mu = mu, laa = laa, lac = lac, Apars = Apars,
+  #                       Epars = Epars, island_ontogeny = island_ontogeny, 
+  #                       extcutoff = extcutoff, K = K,
+  #                       island_spec = island_spec, mainland_n, thor)
   # print(rates)
   
 
 
-  # Pick timeval
-  timeval <- pick_timeval(rates, timeval)
+
   
   
 
   # event <- c()
   while(timeval <= totaltime) {
     if (timeval < thor) {
-      # Determine event
       
+      
+      rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
+                            mu = mu, laa = laa, lac = lac, Apars = Apars,
+                            Epars = Epars, island_ontogeny = island_ontogeny, 
+                            extcutoff = extcutoff, K = K,
+                            island_spec = island_spec, mainland_n = mainland_n, thor = thor)
+      
+      # Pick timeval
+      timeval <- pick_timeval(rates, timeval)
+      
+      # Determine event
       possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
                                                       rates[[3]], rates[[4]], 
                                                       rates[[5]] - rates[[2]]),
@@ -72,19 +81,11 @@ DAISIE_sim_core <- function(time,
       # Run event
       # cat(timeval, "\t", "ex:", "\t",  rates[[2]], "\t", "an:", "\t", rates[[3]], "\t", "cl:", "\t", rates[[4]], "\t", "imm:", "\t", rates[[1]], "\n")
       
-      new_state <- DAISIE_sim_update_state(timeval, possible_event, maxspecID,
-                                           mainland_spec, island_spec)
+      new_state <- DAISIE_sim_update_state(timeval = timeval, possible_event = possible_event, maxspecID = maxspecID,
+                                           mainland_spec = mainland_spec, island_spec = island_spec)
       island_spec <- new_state$island_spec
       maxspecID <- new_state$maxspecID
-      
-      
-      rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
-                            mu = mu, laa = laa, lac = lac, Apars = Apars,
-                            Epars = Epars, island_ontogeny = island_ontogeny, 
-                            extcutoff = extcutoff, K = K,
-                            island_spec = island_spec, mainland_n = mainland_n, thor = thor)
-      
-      timeval <- pick_timeval(rates, timeval)
+
       
       ##### After thor is reached ####
       
@@ -272,19 +273,21 @@ DAISIE_sim_update_state <- function(timeval, possible_event,maxspecID,mainland_s
     if(typeofspecies == "I")
     {
       island_spec = island_spec[-extinct,]
+      # print("hey")
     }
     #remove immigrant
     
     if(typeofspecies == "A")
     {
       island_spec = island_spec[-extinct,]
+      # print("hey2")
     }
     #remove anagenetic
     
     if(typeofspecies == "C")
     {
       #remove cladogenetic
-      
+     # print("hey3") 
       #first find species with same ancestor AND arrival totaltime
       sisters = intersect(which(island_spec[,2] == island_spec[extinct,2]),which(island_spec[,3] == island_spec[extinct,3]))
       survivors = sisters[which(sisters != extinct)]
@@ -401,7 +404,7 @@ DAISIE_sim_update_state <- function(timeval, possible_event,maxspecID,mainland_s
   if (possible_event > 4) {
     # Nothing happens
   }
-  
+  # print(island_spec)
   return(list(island_spec = island_spec,maxspecID = maxspecID))
 }
 
@@ -473,7 +476,7 @@ DAISIE_ONEcolonist <- function(totaltime,island_spec,stt_table)
     uniquecol <- as.numeric(unique(youngest_table[,"Colonisation time (BP)"]))
     
     descendants$missing_species <- length(which(youngest_table[,"Species type"]!='I'))
-    # print(length(which(youngest_table[,"Species type"]!='I')))
+    print(length(which(youngest_table[,"Species type"]!='I')))
     for(colonisation in 1:length(uniquecol))
     {
       descendants$other_clades_same_ancestor[[colonisation]] <- list(brts_miss = NA,species_type = NA)	
