@@ -73,13 +73,12 @@ DAISIE_sim_core <- function(time,
       # Determine event
       possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
                                                       rates[[3]], rates[[4]], 
-                                                      rates[[5]] - rates[[2]]),
+                                                      (rates[[5]] - rates[[2]])),
                                      replace = FALSE)
-       
        # write.table(possible_event, file = "event_no_ont.csv", append = TRUE, col.names = FALSE, row.names = FALSE)
 
       # Run event
-      # cat(timeval, "\t", "ex:", "\t",  rates[[2]], "\t", "an:", "\t", rates[[3]], "\t", "cl:", "\t", rates[[4]], "\t", "imm:", "\t", rates[[1]], "\n")
+      # cat(timeval, "\t", "ex:", "\t",  rates[[2]], "\t", "an:", "\t", rates[[3]], "\t", "cl:", "\t", rates[[4]], "\t", "imm:", "\t", rates[[1]], "\t ev: ", possible_event, "\n")
       
       new_state <- DAISIE_sim_update_state(timeval = timeval, possible_event = possible_event, maxspecID = maxspecID,
                                            mainland_spec = mainland_spec, island_spec = island_spec)
@@ -99,6 +98,7 @@ DAISIE_sim_core <- function(time,
       # thor <- timeval + ext_multiplier * (totaltime - timeval)
       thor <- get_thor(timeval = timeval, totaltime = totaltime, Apars = Apars, ext_multiplier = ext_multiplier,
                        island_ontogeny = island_ontogeny, thor = thor)
+      # print(thor)
     }
     
     # Determine timeval and update rates
@@ -476,7 +476,7 @@ DAISIE_ONEcolonist <- function(totaltime,island_spec,stt_table)
     uniquecol <- as.numeric(unique(youngest_table[,"Colonisation time (BP)"]))
     
     descendants$missing_species <- length(which(youngest_table[,"Species type"]!='I'))
-    print(length(which(youngest_table[,"Species type"]!='I')))
+    # print(length(which(youngest_table[,"Species type"]!='I')))
     for(colonisation in 1:length(uniquecol))
     {
       descendants$other_clades_same_ancestor[[colonisation]] <- list(brts_miss = NA,species_type = NA)	
