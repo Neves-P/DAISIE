@@ -43,23 +43,57 @@ DAISIE_sim_core <- function(time,
   # Pick thor (before timeval, to set Amax thor)
   thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
   
-  # rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
-  #                       mu = mu, laa = laa, lac = lac, Apars = Apars,
-  #                       Epars = Epars, island_ontogeny = island_ontogeny, 
-  #                       extcutoff = extcutoff, K = K,
-  #                       island_spec = island_spec, mainland_n, thor)
+  rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
+                        mu = mu, laa = laa, lac = lac, Apars = Apars,
+                        Epars = Epars, island_ontogeny = island_ontogeny,
+                        extcutoff = extcutoff, K = K,
+                        island_spec = island_spec, mainland_n, thor)
   # print(rates)
+
+  # Pick timeval
+  timeval <- pick_timeval(rates, timeval)
   
-
-
-
+  
+  # # print(rates)
+  # timeval <- pick_timeval(rates, timeval)
+  # print(timeval)
+  # if (timeval > totaltime) {
+  #   timeval <- thor
+  # }
   
   
-
+  
+  
   # event <- c()
   while(timeval <= totaltime) {
     if (timeval < thor) {
       
+
+      
+      # Determine event
+      possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
+                                                      rates[[3]], rates[[4]], 
+                                                      (rates[[5]] - rates[[2]])),
+                                     replace = FALSE)
+      # write.table(possible_event, file = "event_no_ont.csv", append = TRUE, col.names = FALSE, row.names = FALSE)
+      
+      # Run event
+      # cat(timeval, "\t", "ex:", "\t",  rates[[2]], "\t", "an:", "\t", rates[[3]], "\t", "cl:", "\t", rates[[4]], "\t", "imm:", "\t", rates[[1]], "\t ev: ", possible_event, "\n")
+      
+      
+      new_state <- DAISIE_sim_update_state(timeval = timeval, possible_event = possible_event, maxspecID = maxspecID,
+                                           mainland_spec = mainland_spec, island_spec = island_spec)
+      island_spec <- new_state$island_spec
+      maxspecID <- new_state$maxspecID
+      
+      if (timeval <= totaltime) {
+      stt_table <- rbind(stt_table,
+                         c(totaltime - timeval,
+                           length(which(island_spec[,4] == "I")),
+                           length(which(island_spec[,4] == "A")),
+                           length(which(island_spec[,4] == "C"))))
+      # print(totaltime - timeval)
+      }
       
       rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
                             mu = mu, laa = laa, lac = lac, Apars = Apars,
@@ -70,58 +104,50 @@ DAISIE_sim_core <- function(time,
       # Pick timeval
       timeval <- pick_timeval(rates, timeval)
       
-      # Determine event
-      possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
-                                                      rates[[3]], rates[[4]], 
-                                                      (rates[[5]] - rates[[2]])),
-                                     replace = FALSE)
-       # write.table(possible_event, file = "event_no_ont.csv", append = TRUE, col.names = FALSE, row.names = FALSE)
-
-      # Run event
-      # cat(timeval, "\t", "ex:", "\t",  rates[[2]], "\t", "an:", "\t", rates[[3]], "\t", "cl:", "\t", rates[[4]], "\t", "imm:", "\t", rates[[1]], "\t ev: ", possible_event, "\n")
       
-      new_state <- DAISIE_sim_update_state(timeval = timeval, possible_event = possible_event, maxspecID = maxspecID,
-                                           mainland_spec = mainland_spec, island_spec = island_spec)
-      island_spec <- new_state$island_spec
-      maxspecID <- new_state$maxspecID
-
-      
-      ##### After thor is reached ####
-      
+                         ##### After thor is reached ####
+                         
     } else {
       
       # Update timeval
       
-      timeval <- thor
+      # timeval <- thor
       
       # Recalculate thor
       # thor <- timeval + ext_multiplier * (totaltime - timeval)
       thor <- get_thor(timeval = timeval, totaltime = totaltime, Apars = Apars, ext_multiplier = ext_multiplier,
                        island_ontogeny = island_ontogeny, thor = thor)
+      
       # print(thor)
     }
     
     # Determine timeval and update rates
     # timeval <- pick_timeval(rates, timeval)
-    stt_table = rbind(stt_table,
-                      c(totaltime - timeval,
-                        length(which(island_spec[, 4] == "I")),
-                        length(which(island_spec[, 4] == "A")),
-                        length(which(island_spec[, 4] == "C"))))
+    # if (totaltime < timeval & stt_table[nrow(stt_table), 1] < 1) {
+    #   stt_table[nrow(stt_table),1] <- 0
+    #   } else if (totaltime < timeval) {
+    #   stt_table = rbind(stt_table,
+    #                     c(0,
+    #                       length(which(island_spec[, 4] == "I")),
+    #                       length(which(island_spec[, 4] == "A")),
+    #                       length(which(island_spec[, 4] == "C"))))
+    # print(length(which(island_spec[, 4] == "I")))
+    # } else {
+    
+    # print(stt_table[nrow(stt_table), 1])
   }
-  # Update stt table
-  # if (stt_table[nrow(stt_table), 1] < 0) {
-  #   stt_table[nrow(stt_table),1] <- 0
-  #   print("hey1")
+  # if (stt_table[nrow(stt_table), 1] <= totaltime) {
+  #   stt_table = rbind(stt_table,
+  #                     c(0,
+  #                       length(which(island_spec[, 4] == "I")),
+  #                       length(which(island_spec[, 4] == "A")),
+  #                       length(which(island_spec[, 4] == "C"))))
+  #   print(stt_table)
   # }
-  if (stt_table[nrow(stt_table), 1] == totaltime) {
-    stt_table = rbind(stt_table,
-                      c(0,
-                        length(which(island_spec[, 4] == "I")),
-                        length(which(island_spec[, 4] == "A")),
-                        length(which(island_spec[, 4] == "C"))))
-  }
-
+  
+  
+  
+  
   
 
   
