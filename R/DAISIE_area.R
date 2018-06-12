@@ -18,12 +18,13 @@ island_area <- function(timeval, totaltime, Apars, island_function_shape){
     a <- f * peak/ ( 1 + f)
     b <- peak / (1 + f) 
     At <- Amax * proptime^a * (1 - proptime)^ b/ ((a / (a + b))^a * (b / (a + b))^b)
-    return(At)}
+    return(At)
+    }
   
   #Linear decline
   if(island_function_shape == "linear"){
     b <- Amax # intercept (peak area)
-    m <- -(b / Topt) # slope
+    m <- -(b / (Topt * Tmax)) # slope
     At <- m * timeval + b
     return(At)
   }
