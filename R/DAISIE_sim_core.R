@@ -183,7 +183,9 @@ update_rates <- function(timeval, totaltime,
   
   if (is.null(island_ontogeny)) {
     ext_rate_max <- ext_rate
-  } else if((Apars[2] * totaltime) > timeval) {
+    immig_rate_max <- immig_rate
+    clado_rate_max <- clado_rate
+  } else if(island_ontogeny == "quadratic" && (Apars[2] * totaltime) > timeval) {
     ext_rate_max <- ext_rate
   } else {
     
@@ -192,9 +194,21 @@ update_rates <- function(timeval, totaltime,
                                  island_function_shape = island_ontogeny, 
                                  extcutoff = extcutoff, island_spec = island_spec,
                                  K = K)
+    # Double check these rates
+    immig_rate_max <- get_immig_rate(timeval = thor, totaltime = totaltime,
+                                 gam = gam, Apars = Apars, Epars = Epars,
+                                 island_function_shape = island_ontogeny, 
+                                 extcutoff = extcutoff, island_spec = island_spec,
+                                 K = K, mainland_n = mainland_n)
+    
+    clado_rate_max <- get_clado_rate(timeval = thor, totaltime = totaltime,
+                                 lac = lac, Apars = Apars, Epars = Epars,
+                                 island_function_shape = island_ontogeny, 
+                                 extcutoff = extcutoff, island_spec = island_spec,
+                                 K = K)
   }
   
-  rates <- list(immig_rate, ext_rate, ana_rate, clado_rate, ext_rate_max)
+  rates <- list(immig_rate, ext_rate, ana_rate, clado_rate, ext_rate_max, immig_rate_max, clado_rate_max)
   return(rates)
 }
 

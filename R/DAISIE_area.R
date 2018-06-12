@@ -68,8 +68,12 @@ get_clado_rate <- function(timeval, totaltime,
                            island_function_shape, 
                            extcutoff, island_spec,
                            K) {
-  clado_rate = max(c(length(island_spec[,1]) * (lac * (1 - length(island_spec[, 1]) / K)), 0), na.rm = T)
+  clado_rate = max(c(length(island_spec[,1]) * (lac * (1 - length(island_spec[, 1]) / (K * island_area(timeval, totaltime, Apars, island_function_shape)))), 0), na.rm = T)
   return(clado_rate)
+}
+
+convert_K_to_Kprime <- function(Apars, K) {
+  Kprime <- K / Apars[1]
 }
 
 get_immig_rate <- function(timeval, totaltime,
@@ -77,7 +81,9 @@ get_immig_rate <- function(timeval, totaltime,
                            island_function_shape, 
                            extcutoff, island_spec,
                            K, mainland_n) {
-  immig_rate = max(c(mainland_n * gam * (1 - length(island_spec[,1])/K), 0), na.rm = T)
+  immig_rate = max(c(mainland_n * gam * 
+                       (1 - length(island_spec[,1]) / 
+                          (K * island_area(timeval, totaltime, Apars, island_function_shape))), 0), na.rm = T)
   return(immig_rate)
 }
 
