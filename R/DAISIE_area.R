@@ -3,7 +3,7 @@
 
 island_area <- function(timeval, totaltime, Apars, island_function_shape){
 
-  Tmax <- totaltime # total time
+  Tmax <- Apars[4] # total time A PARS 1!!!!!!!!!!!!!!!!!!!!
   Amax <- Apars[1] # maximum area
   Topt <- Apars[2] # peak position in %
   peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.
@@ -88,7 +88,7 @@ get_thor <- function(timeval, totaltime, Apars, ext_multiplier, island_ontogeny,
   } else {
     
     if (is.null(thor)){
-      thor <- Apars[2] * totaltime
+      thor <- Apars[2] * Apars[4]
       
     } else if (timeval >= thor) {
       

@@ -34,7 +34,7 @@ DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
     stt_all = matrix(ncol = 5,nrow = sample_freq + 1)
     
     colnames(stt_all) = c("Time","nI","nA","nC","present")
-    stt_all[,"Time"] = rev(seq(from = 0,to = time,length.out = sample_freq + 1))
+    stt_all[,"Time"] = rev(seq(from = 0,to = totaltime,length.out = sample_freq + 1))
     stt_all[1,2:5] = c(0,0,0,0) 
     
     for(i in 2:nrow(stt_all))
@@ -65,7 +65,7 @@ DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
       
       stt_type1  = matrix(ncol=5,nrow=sample_freq+1)
       colnames(stt_type1) = c("Time","nI","nA","nC","present")
-      stt_type1[,"Time"] = rev(seq(from = 0,to = time,length.out = sample_freq + 1))
+      stt_type1[,"Time"] = rev(seq(from = 0,to = totaltime,length.out = sample_freq + 1))
       stt_type1[1,2:5] = c(0,0,0,0)
       
       for(i in 2:nrow(stt_type1))
@@ -95,7 +95,7 @@ DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
       
       stt_type2 = matrix(ncol = 5,nrow = sample_freq + 1)
       colnames(stt_type2) = c("Time","nI","nA","nC","present")
-      stt_type2[,"Time"] = rev(seq(from = 0,to = time,length.out = sample_freq + 1))
+      stt_type2[,"Time"] = rev(seq(from = 0,to = totaltime,length.out = sample_freq + 1))
       stt_type2[1,2:5] = c(0,0,0,0)
       
       for(i in 2:nrow(stt_type2))
@@ -114,9 +114,9 @@ DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
         stt_type2[i,c(2:5)] = apply(store_richness_time_slice,2,sum)
       }
       
-      island_list[[1]] = list(island_age = time,not_present_type1 = DDD::roundn(M *(1 - prop_type2_pool)) - (number_type1_cols),not_present_type2 = DDD::roundn(M * prop_type2_pool) - number_type2_cols,stt_all = stt_all, stt_type1 = stt_type1,stt_type2 = stt_type2)
+      island_list[[1]] = list(island_age = totaltime,not_present_type1 = DDD::roundn(M *(1 - prop_type2_pool)) - (number_type1_cols),not_present_type2 = DDD::roundn(M * prop_type2_pool) - number_type2_cols,stt_all = stt_all, stt_type1 = stt_type1,stt_type2 = stt_type2)
     } else {
-      island_list[[1]] = list(island_age = time,not_present = number_not_present, stt_all = stt_all)
+      island_list[[1]] = list(island_age = totaltime,not_present = number_not_present, stt_all = stt_all)
     }
     
     if(number_present > 0)
@@ -131,8 +131,8 @@ DAISIE_format_CS = function(island_replicates,time,M,sample_freq)
     if(number_present == 0)
     {
       island_list = list()
-      island_list[[1]] = list(island_age = time,not_present = M, stt_all = stt_all)
-      island_list[[2]] = list(branching_times= time, stac = 0, missing_species = 0)
+      island_list[[1]] = list(island_age = totaltime,not_present = M, stt_all = stt_all)
+      island_list[[2]] = list(branching_times= totaltime, stac = 0, missing_species = 0)
       
     }
     

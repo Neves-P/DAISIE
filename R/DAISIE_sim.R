@@ -25,8 +25,13 @@ DAISIE_sim = function(
     
     for(rep in 1:replicates)
     {
-      island_replicates[[rep]] <- DAISIE_sim_core(time=totaltime,mainland_n = M,pars=pars,
-                                                  island_ontogeny = island_ontogeny, Apars = Apars, Epars = Epars)
+      island_replicates[[rep]] <- DAISIE_sim_core(time=totaltime,
+                                                  mainland_n = M,
+                                                  pars=pars,
+                                                  island_ontogeny = island_ontogeny,
+                                                  Apars = Apars,
+                                                  Epars = Epars)
+      
       print(paste("Island replicate ",rep,sep = ""))	
     } 
     island_replicates = DAISIE_format_IW(island_replicates = island_replicates,
@@ -44,8 +49,12 @@ DAISIE_sim = function(
         full_list = list()
         for(m_spec in 1:M) 
         { 	
-          full_list[[m_spec]]  = DAISIE_sim_core(time=totaltime,mainland_n = 1,pars,
-                                                 island_ontogeny = island_ontogeny, Apars = Apars, Epars = Epars)
+          full_list[[m_spec]]  = DAISIE_sim_core(time=totaltime,
+                                                 mainland_n = 1,
+                                                 pars = pars,
+                                                 island_ontogeny = island_ontogeny,
+                                                 Apars = Apars,
+                                                 Epars = Epars)
           # print(full_list)
         }
         
@@ -63,7 +72,11 @@ DAISIE_sim = function(
       
       if(replicates_apply_type2 == TRUE)
       {
-        island_replicates = DAISIE_sim_min_type2(time = totaltime,M = M,pars = pars,replicates = replicates, prop_type2_pool = prop_type2_pool)
+        island_replicates = DAISIE_sim_min_type2(time = totaltime,
+                                                 M = M,
+                                                 pars = pars,
+                                                 replicates = replicates, 
+                                                 prop_type2_pool = prop_type2_pool)
       } else
       {
         for(rep in 1:replicates)
@@ -104,7 +117,10 @@ DAISIE_sim = function(
       }
     }
 
-    island_replicates = DAISIE_format_CS(island_replicates = island_replicates,time = totaltime,M = M,sample_freq = sample_freq)
+    island_replicates = DAISIE_format_CS(island_replicates = island_replicates,
+                                         time = totaltime,
+                                         M = M,
+                                         sample_freq = sample_freq)
   }
   if(plot_sims == TRUE)
   { 

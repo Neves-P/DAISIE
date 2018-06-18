@@ -42,7 +42,7 @@ DAISIE_sim_core <- function(time,
   # Determine rates
   # Pick thor (before timeval, to set Amax thor)
   thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
-  
+  # print(thor)
   rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
                         mu = mu, laa = laa, lac = lac, Apars = Apars,
                         Epars = Epars, island_ontogeny = island_ontogeny,
@@ -54,7 +54,8 @@ DAISIE_sim_core <- function(time,
   
   while(timeval <= totaltime) {
     if (timeval < thor) {
-      
+
+ 
 
       # Determine event
       possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
@@ -83,11 +84,13 @@ DAISIE_sim_core <- function(time,
                             Epars = Epars, island_ontogeny = island_ontogeny, 
                             extcutoff = extcutoff, K = K,
                             island_spec = island_spec, mainland_n = mainland_n, thor = thor)
-      
+      # cat(c(rates[[1]], rates[[2]], 
+            # rates[[3]], rates[[4]], 
+            # (rates[[5]] - rates[[2]])), "\n")
       # Pick timeval
       timeval <- pick_timeval(rates, timeval)
-      
-      
+      # cat("timeval: ", timeval, "\n")
+      # cat("thor: ", thor, "\n")
                          ##### After thor is reached ####
                          
     } else {
@@ -100,7 +103,7 @@ DAISIE_sim_core <- function(time,
       thor <- get_thor(timeval = timeval, totaltime = totaltime, Apars = Apars,
                        ext_multiplier = ext_multiplier,
                        island_ontogeny = island_ontogeny, thor = thor)
-
+      # cat(rates[[1]], rates[[2]], rates[[3]], rates[[4]], rates[[5]], "\n")
     }
     # print(island_spec)
   }
@@ -187,7 +190,7 @@ update_rates <- function(timeval, totaltime,
   
   if (is.null(island_ontogeny)) {
     ext_rate_max <- ext_rate
-  } else if((Apars[2] * totaltime) > timeval) {
+  } else if((Apars[2] * Apars[4]) > timeval) {
     ext_rate_max <- ext_rate
   } else {
     
