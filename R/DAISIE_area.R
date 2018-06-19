@@ -3,7 +3,7 @@
 
 island_area <- function(timeval, totaltime, Apars, island_function_shape){
 
-  Tmax <- Apars[4] # total time A PARS 1!!!!!!!!!!!!!!!!!!!!
+  Tmax <- Apars[4] # total time A PARS 1
   Amax <- Apars[1] # maximum area
   Topt <- Apars[2] # peak position in %
   peak <- Apars[3] # peakiness - we specify a value of 1 but this is flexible.

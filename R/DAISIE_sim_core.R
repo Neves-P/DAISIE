@@ -43,52 +43,53 @@ DAISIE_sim_core <- function(time,
   # Pick thor (before timeval, to set Amax thor)
   thor <- get_thor(0, totaltime, Apars, ext_multiplier, island_ontogeny, thor = NULL)
   # print(thor)
-  rates <- update_rates(timeval = 0, totaltime = totaltime, gam = gam,
-                        mu = mu, laa = laa, lac = lac, Apars = Apars,
-                        Epars = Epars, island_ontogeny = island_ontogeny,
-                        extcutoff = extcutoff, K = K,
-                        island_spec = island_spec, mainland_n, thor)
+  
 
   # Pick timeval
-  timeval <- pick_timeval(rates, timeval)
+  # timeval <- pick_timeval(rates, timeval)
   
   while(timeval <= totaltime) {
     if (timeval < thor) {
 
- 
-
+      rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
+                            mu = mu, laa = laa, lac = lac, Apars = Apars,
+                            Epars = Epars, island_ontogeny = island_ontogeny,
+                            extcutoff = extcutoff, K = K,
+                            island_spec = island_spec, mainland_n, thor)
+      timeval <- pick_timeval(rates, timeval)
       # Determine event
       possible_event <- DDD::sample2(1:5, 1, prob = c(rates[[1]], rates[[2]], 
                                                       rates[[3]], rates[[4]], 
                                                       (rates[[5]] - rates[[2]])),
                                      replace = FALSE)
+      # assertthat::assert_that(assertthat::are_equal(rates[[5]], rates[[2]]))
       # print(possible_event)
       # Run event
        
-      new_state <- DAISIE_sim_update_state(timeval = timeval, possible_event = possible_event, maxspecID = maxspecID,
-                                           mainland_spec = mainland_spec, island_spec = island_spec)
-      island_spec <- new_state$island_spec
-      # print(island_spec)
-      maxspecID <- new_state$maxspecID
-      # print(island_spec)
+
       if (timeval <= totaltime) {
+        new_state <- DAISIE_sim_update_state(timeval = timeval, possible_event = possible_event, maxspecID = maxspecID,
+                                             mainland_spec = mainland_spec, island_spec = island_spec)
+        island_spec <- new_state$island_spec
+        # print(island_spec)
+        maxspecID <- new_state$maxspecID
+      
+      }
       stt_table <- rbind(stt_table,
                          c(totaltime - timeval,
                            length(which(island_spec[,4] == "I")),
                            length(which(island_spec[,4] == "A")),
                            length(which(island_spec[,4] == "C"))))
-      }
-      
-      rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
-                            mu = mu, laa = laa, lac = lac, Apars = Apars,
-                            Epars = Epars, island_ontogeny = island_ontogeny, 
-                            extcutoff = extcutoff, K = K,
-                            island_spec = island_spec, mainland_n = mainland_n, thor = thor)
+      # rates <- update_rates(timeval = timeval, totaltime = totaltime, gam = gam,
+      #                       mu = mu, laa = laa, lac = lac, Apars = Apars,
+      #                       Epars = Epars, island_ontogeny = island_ontogeny, 
+      #                       extcutoff = extcutoff, K = K,
+      #                       island_spec = island_spec, mainland_n = mainland_n, thor = thor)
       # cat(c(rates[[1]], rates[[2]], 
             # rates[[3]], rates[[4]], 
             # (rates[[5]] - rates[[2]])), "\n")
       # Pick timeval
-      timeval <- pick_timeval(rates, timeval)
+
       # cat("timeval: ", timeval, "\n")
       # cat("thor: ", thor, "\n")
                          ##### After thor is reached ####
@@ -207,7 +208,7 @@ update_rates <- function(timeval, totaltime,
 
 pick_timeval <- function(rates, timeval) {
   # Calculates when next event will happen
-  totalrate <- rates[[1]] + rates[[2]] + rates[[3]] + rates[[5]]
+  totalrate <- rates[[1]] + rates[[3]] + rates[[4]] + rates[[5]]
   dt <- rexp(1, totalrate)
   timeval <- timeval + dt
   return(timeval)
