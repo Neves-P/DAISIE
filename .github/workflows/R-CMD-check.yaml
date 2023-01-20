@@ -65,6 +65,9 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
           if (.Platform$OS.type == "unix") remotes::install_cran("doMC")
+          install.packages("Rcpp", repos=c("https://ghrr.github.io/drat", "https://cloud.r-project.org"))
+          install.packages("BH", repos=c("https://ghrr.github.io/drat", "https://cloud.r-project.org"))
+          install.packages("RcppEigen", repos=c("https://ghrr.github.io/drat", "https://cloud.r-project.org"))
         shell: Rscript {0}
 
       - name: Check
