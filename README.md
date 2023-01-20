@@ -5,7 +5,7 @@
 [![](http://cranlogs.r-pkg.org/badges/DAISIE)](https://CRAN.R-project.org/package=DAISIE)
 ![GitHub R package version](https://img.shields.io/github/r-package/v/rsetienne/DAISIE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4054058.svg)](https://doi.org/10.5281/zenodo.4054058)
-
+ONLY dev
 Branch|![GHA logo](pics/github_actions_logo.png)|[![Codecov logo](pics/Codecov.png)](https://www.codecov.io)
 ---|---|---
 `master`asdvcv|[![R build status](https://github.com/rsetienne/DAISIE/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/rsetienne/DAISIE/actions)|[![codecov.io](https://codecov.io/github/rsetienne/DAISIE/coverage.svg?branch=master)](https://codecov.io/github/rsetienne/DAISIE/branch/master)
