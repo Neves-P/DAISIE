@@ -33,7 +33,6 @@ test_that("DAISIE_ML_CS: DAISIE_DE with equal_extinction = TRUE matches DAISIE",
   testthat::expect_equal(ML_estimates_DAISIE_DE$loglik, ML_estimates_DAISIE$loglik, tol = 1E-6)
   testthat::expect_equal(ML_estimates_DAISIE_DE, ML_estimates_DAISIE, tol = 1E-3)
 
-
   utils::data(made_up_datalist)
 
   pars1 <- c(2.546591, 2.678781, 2.678781, 0.009326754, 1.008583)
@@ -104,4 +103,24 @@ test_that("DAISIE_DE and DAISIE give same results when there are missing species
   }
   loglik <- log(lik)
   testthat::expect_equal(loglik, loglik_DE)
+})
+
+test_that("DAISIE_DE gives output when extinction rates between endemic and non-endemic species differ", {
+
+  invisible(capture.output(ML_estimates_DAISIE_DE <- DAISIE_ML_CS(
+    datalist = Galapagos_datalist,
+    initparsopt = c(2.550682, 2.683817, 2.683817, 0.009344, 1.00728),
+    idparsopt = c(1, 2, 3, 4, 5),
+    idparsfix = NULL,
+    parsfix = NULL,
+    ddmodel = 0,
+    verbose = 0,
+    methode = 'odeint::runge_kutta_cash_karp54',
+    CS_version = list(model = 1,
+                      function_to_optimize = 'DAISIE_DE'),
+    equal_extinction = FALSE
+  )))
+
+  testthat::expect_false(ML_estimates_DAISIE_DE[2] == ML_estimates_DAISIE_DE[3])
+  testthat::expect_true(names(ML_estimates_DAISIE_DE)[3] == 'mu_NE')
 })

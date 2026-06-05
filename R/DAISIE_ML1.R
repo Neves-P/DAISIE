@@ -437,7 +437,7 @@ DAISIE_ML1 <- function(
     pars_to_print <- MLpars1[1:5]
     parnames <- c('lambda^c','mu','K','gamma','lambda^a')
   }
-  if(function_to_optimize != 'DAISIE') {
+  if(function_to_optimize == 'DAISIE_DE') {
     parnames[which(parnames == 'mu')] <- 'mu_E'
     parnames[which(parnames == 'K')] <- 'mu_NE'
     parnames[which(parnames == 'mu2')] <- 'mu2_E'
@@ -457,8 +457,8 @@ DAISIE_ML1 <- function(
       paste(ExpEIN[[1]], ExpEIN[[2]], ExpEIN[[3]])
     ) # nolint end
   }
-  if(function_to_optimize != 'DAISIE') {
-    names(out2[2:3]) <- c('mu_E','mu_NE')
+  if(function_to_optimize == 'DAISIE_DE' & equal_extinction == FALSE) {
+    names(out2)[2:3] <- c('mu_E','mu_NE')
   }
   return(invisible(out2))
 }
