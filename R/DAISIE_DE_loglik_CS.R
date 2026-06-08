@@ -4,7 +4,8 @@ DAISIE_DE_loglik_CS <- function( pars1,
                                  methode = "odeint::runge_kutta_cash_karp54",
                                  abstolint = 1e-15,
                                  reltolint = 1e-15,
-                                 equal_extinction = TRUE) {
+                                 equal_extinction = TRUE,
+                                 sampling = 'n') {
 
   # Apply equal extinction condition AFTER initializing pars1
   if (equal_extinction) {
@@ -73,22 +74,42 @@ DAISIE_DE_loglik_CS <- function( pars1,
                                         abstolint)
 
     } else if (stac == 2 && length(brts) == 2 || stac == 3 && length(brts) == 2 || stac == 5 && length(brts) == 2 || stac == 9) {
-      loglikelihood <- DAISIE_DE_logpES(brts = brts,
-                                        missnumspec = missnumspec,
-                                        stac = stac,
-                                        pars1 = pars1,
-                                        methode = methode,
-                                        reltolint = 1e-15,
-                                        abstolint = 1e-15)
+      if(sampling = 'rho' || missnumspec == 0)
+        loglikelihood <- DAISIE_DE_logpES(brts = brts,
+                                          missnumspec = missnumspec,
+                                          stac = stac,
+                                          pars1 = pars1,
+                                          methode = methode,
+                                          reltolint = 1e-15,
+                                          abstolint = 1e-15)
+      else
+        loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpES,
+                                     brts = brts,
+                                     missnumspec = missnumspec,
+                                     stac = stac,
+                                     pars1 = pars1,
+                                     methode = methode,
+                                     reltolint = 1e-15,
+                                     abstolint = 1e-15)
     } else if (stac == 2 && length(brts) > 2 || stac == 3 && length(brts) > 2 || stac == 6) {
-      loglikelihood <- DAISIE_DE_logpEC(brts = brts,
-                                        missnumspec = missnumspec,
-                                        stac = stac,
-                                        pars1 = pars1,
-                                        methode = methode,
-                                        reltolint = 1e-15,
-                                        abstolint = 1e-15)
-    }  else {
+      if(sampling == 'rho' || missnumspec == 0)
+        loglikelihood <- DAISIE_DE_logpEC(brts = brts,
+                                          missnumspec = missnumspec,
+                                          stac = stac,
+                                          pars1 = pars1,
+                                          methode = methode,
+                                          reltolint = 1e-15,
+                                          abstolint = 1e-15)
+      else
+        loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpEC,
+                                     brts = brts,
+                                     missnumspec = missnumspec,
+                                     stac = stac,
+                                     pars1 = pars1,
+                                     methode = methode,
+                                     reltolint = 1e-15,
+                                     abstolint = 1e-15)
+    } else {
       stop("Unknown stac value: ", stac)
     }
 
