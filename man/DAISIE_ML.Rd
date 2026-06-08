@@ -31,7 +31,8 @@ DAISIE_ML_CS(
   tolint = c(1e-16, 1e-10),
   jitter = 0,
   num_cycles = 1,
-  equal_extinction = TRUE
+  equal_extinction = TRUE,
+  sampling = "n"
 )
 }
 \arguments{
@@ -245,6 +246,9 @@ Default is 1.}
 \item{equal_extinction}{If FALSE the extinction rates of endemic and
 non-endemic species are different, otherwise they are set equal in
 optimization}
+
+\item{sampling}{Determines whether n-sampling or rho-sampling should be used when
+function_to_optimize = 'DAISIE_DE'.}
 }
 \value{
 The output is a dataframe containing estimated parameters and
