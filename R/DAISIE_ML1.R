@@ -170,6 +170,12 @@ DAISIE_ML1 <- function(
   if(is.null(function_to_optimize)) function_to_optimize <- 'DAISIE'
   if(function_to_optimize == 'DAISIE_DE') {
     DAISIE_loglik_all_choosepar_fun <- DAISIE_DE_loglik_all_choosepar
+    if(equal_extinction == TRUE && 3 %in% idparsopt) {
+      message('You are setting equal extinction of endemic and non-endemic species,
+but you are also optimizing the extinction rate for non-endemic species.
+This is inconsistent. Optimization will proceed, but you should ignore the
+corresponding parameter estimate.\n')
+    }
   } else
   {
     DAISIE_loglik_all_choosepar_fun <- DAISIE_loglik_all_choosepar
