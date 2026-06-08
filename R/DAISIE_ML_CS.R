@@ -184,7 +184,8 @@ DAISIE_ML_CS <- DAISIE_ML <- function(
     tolint = c(1E-16, 1E-10),
     jitter = 0,
     num_cycles = 1,
-    equal_extinction = TRUE) {
+    equal_extinction = TRUE,
+    sampling = 'n') {
 
   if (datatype == "single") {
     if (is.na(island_ontogeny)) {
@@ -231,7 +232,8 @@ DAISIE_ML_CS <- DAISIE_ML <- function(
                           tolint = tolint,
                           jitter = jitter,
                           num_cycles = num_cycles,
-                          equal_extinction = equal_extinction)
+                          equal_extinction = equal_extinction,
+                          sampling = sampling)
       }
     } else {
       stop(

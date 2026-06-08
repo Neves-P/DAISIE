@@ -521,6 +521,8 @@
 #' @param equal_extinction If FALSE the extinction rates of endemic and
 #' non-endemic species are different, otherwise they are set equal in
 #' optimization
+#' @param sampling Determines whether n-sampling or rho-sampling should be used when
+#' function_to_optimize = 'DAISIE_DE'.
 #' @param files_to_write number of files to write simulations to file
 #' @param use_rcpp If TRUE, use Rcpp implementation of DAISIE simulation core.
 #' Default is FALSE.

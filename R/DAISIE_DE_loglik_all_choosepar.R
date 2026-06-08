@@ -10,7 +10,8 @@ DAISIE_DE_loglik_all_choosepar <- function(trparsopt,
                                            CS_version = list(model = 1, function_to_optimize = 'DAISIE_DE'),
                                            abstolint = 1E-15,
                                            reltolint = 1E-15,
-                                           equal_extinction = TRUE) {
+                                           equal_extinction = TRUE,
+                                           sampling = 'n') {
   if (sum(idparsnoshift == (6:10)) != 5) {
     trpars1 <- rep(0,10)
   } else {
@@ -40,7 +41,8 @@ DAISIE_DE_loglik_all_choosepar <- function(trparsopt,
                                     methode = methode,
                                     abstolint,
                                     reltolint,
-                                    equal_extinction = equal_extinction)
+                                    equal_extinction = equal_extinction,
+                                    sampling = sampling)
     }
     if (is.nan(loglik) || is.na(loglik)) {
       message("There are parameter values used which cause numerical problems.\n")
