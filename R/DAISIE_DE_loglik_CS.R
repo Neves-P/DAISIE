@@ -73,7 +73,6 @@ DAISIE_DE_loglik_CS <- function( pars1,
                                         abstolint)
 
     } else if (stac == 2 && length(brts) == 2 || stac == 3 && length(brts) == 2 || stac == 5 && length(brts) == 2 || stac == 9) {
-
       loglikelihood <- DAISIE_DE_logpES(brts = brts,
                                         missnumspec = missnumspec,
                                         stac = stac,
