@@ -111,18 +111,79 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
     return(loglik)
   }
 
+  nth_deriv_richardson <- function(f, x0, n, h = 1e-5) {
+    binom_coef <- choose(n, 0:n)
+    deriv <- 0
+    for (k in 0:n) {
+      term <- (-1)^(n - k) * binom_coef[k + 1] * f(x0 + k * h)
+      deriv <- deriv + term
+    }
+    return(deriv / h^n)
+  }
+
+  nth_deriv_numDeriv <- function(f, x0, n) {
+    current_f <- f
+    for (i in 1:n) {
+      current_f <- function(x) numDeriv::grad(current_f, x)[1]  # Compute next derivative
+    }
+    return(current_f(x0))
+  }
+
+  nth_deriv_TensorFlow <- function(f, x0, n) {
+    tf$enable_eager_execution()
+    x <- tf$constant(x0, dtype = tf$float32)
+    current_y <- f(x)
+    for (i in 1:n) {
+      with(tf$GradientTape() %as% tape, {
+        current_y_val <- current_y
+      })
+      current_y <- tape$gradient(current_y_val, x)
+    }
+  }
+
+  nth_deriv_madness <- function(f, x, n) {
+    # Base Case: The 0-th derivative is just the original function evaluated at x
+    if (n == 0) {
+      return(f(x))
+    }
+
+    # Base Case: The 1st derivative is exact forward-mode Autodiff
+    if (n == 1) {
+      x_mad <- madness::madness(x)
+      y_mad <- f(x_mad)
+      return(madness::dvdx(y_mad))
+    }
+
+    # Recursive Case: An n-th derivative is the 1st derivative of the (n-1)-th derivative
+    # Define a wrapper that calculates the (n-1)-th derivative at any point val
+    lower_order_wrapper <- function(val) {
+      madness_nth_derivative(f, val, n - 1)
+    }
+
+    # Differentiate the lower-order wrapper using madness's internal numeric engine
+    return(madness::numderiv(f = lower_order_wrapper, val = x))
+  }
+
   bell_polynomials_up_to_n <- function(n, g_derivs) {
     B <- numeric(n + 1)
     B[1] <- 1  # B_0
 
     for (m in 1:n) {
-      sum_val <- 0
+      tmp <- numeric(0)
       for (k in 1:m) {
-        sum_val <- sum_val + choose(m - 1, k - 1) * B[m - k + 1] * g_derivs[k]
+        tmp <- c(tmp, choose(m - 1, k - 1) * B[m - k + 1] * g_derivs[k])
       }
-      B[m + 1] <- sum_val
+      o <- order(abs(tmp))
+      B[m + 1] <- sum(tmp[o])
     }
 
+    # for (m in 1:n) {
+    #   sum_val <- 0
+    #   for (k in 1:m) {
+    #     sum_val <- sum_val + choose(m - 1, k - 1) * B[m - k + 1] * g_derivs[k]
+    #   }
+    #   B[m + 1] <- sum_val
+    # }
     return(B)  # B[1] = B_0, ..., B[n+1] = B_n
   }
 
@@ -133,7 +194,12 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
 
   lderiv <- rep(0,missnumspec)
   for(i in 1:missnumspec) {
-    lderiv[i] <- suppressWarnings(pracma::fderiv(log_f, x = 0, n = i))
+    #lderiv[i] <- suppressWarnings(pracma::fderiv(log_f, x = 0, n = i))
+    #lderiv[i] <- suppressWarnings(nth_deriv_richardson(f = log_f, x0 = 0, n = i)) #simply inaccurate
+    #lderiv[i] <- suppressWarnings(nth_deriv_numDeriv(f = log_f, x0 = 0, n = i))   #doesn't work because it gives stack overflow
+    #lderiv[i] <- suppressWarnings(nth_deriv_TensorFlow(f = log_f, x0 = 0, n = i)) #doesn't work because it requires tensorflow to be installed
+    #lderiv[i] <- suppressWarnings(calculus::derivative(f = log_f, var = c(x = 0), order = i)) #doesn't work as it gives NaN
+    lderiv[i] <- suppressWarnings(pnd::GenD(FUN = log_f, x = 0, deriv.order = i)) #slightly better than fderiv
   }
 
   loglikelihood <- log(nth_derivative_from_log(n = missnumspec, f_val = f(0), g_derivs = lderiv)) + lfactorial(S) - lfactorial(S + missnumspec)
