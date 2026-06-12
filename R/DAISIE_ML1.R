@@ -176,7 +176,7 @@ DAISIE_ML1 <- function(
       message('You are setting equal extinction of endemic and non-endemic species,
 but you are also optimizing the extinction rate for non-endemic species.
 This is inconsistent. Optimization will proceed with the extinction rate of
-non-endemic species fixed.\n')
+non-endemic species fixed to the value of endemic species.\n')
       idparsopt <- idparsopt[-which(idparsopt == 3)]
       initparsopt <- initparsopt[-which(idparsopt == 3)]
       idparsfix <- sort(c(idparsfix, 3))
