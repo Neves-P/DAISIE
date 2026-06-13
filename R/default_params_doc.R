@@ -660,6 +660,7 @@ default_params_doc <- function(
   islands,
   sort_clade_sizes,
   equal_extinction,
+  sampling,
   files_to_write,
   use_rcpp
 ) {

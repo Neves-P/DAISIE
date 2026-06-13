@@ -121,13 +121,13 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
     return(deriv / h^n)
   }
 
-  nth_deriv_numDeriv <- function(f, x0, n) {
-    current_f <- f
-    for (i in 1:n) {
-      current_f <- function(x) numDeriv::grad(current_f, x)[1]  # Compute next derivative
-    }
-    return(current_f(x0))
-  }
+  # nth_deriv_numDeriv <- function(f, x0, n) {
+  #   current_f <- f
+  #   for (i in 1:n) {
+  #     current_f <- function(x) numDeriv::grad(current_f, x)[1]  # Compute next derivative
+  #   }
+  #   return(current_f(x0))
+  # }
 
   # nth_deriv_TensorFlow <- function(f, x0, n) {
   #   tensorflow::tf$enable_eager_execution()
@@ -140,7 +140,7 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
   #     current_y <- tensorflow::tape$gradient(current_y_val, x)
   #   }
   # }
-  #
+
   # nth_deriv_madness <- function(f, x0, n) {
   #   if (n == 0) {
   #     return(f(x0))
