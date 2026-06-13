@@ -129,40 +129,32 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
     return(current_f(x0))
   }
 
-  nth_deriv_TensorFlow <- function(f, x0, n) {
-    tf$enable_eager_execution()
-    x <- tf$constant(x0, dtype = tf$float32)
-    current_y <- f(x)
-    for (i in 1:n) {
-      with(tf$GradientTape() %as% tape, {
-        current_y_val <- current_y
-      })
-      current_y <- tape$gradient(current_y_val, x)
-    }
-  }
-
-  nth_deriv_madness <- function(f, x, n) {
-    # Base Case: The 0-th derivative is just the original function evaluated at x
-    if (n == 0) {
-      return(f(x))
-    }
-
-    # Base Case: The 1st derivative is exact forward-mode Autodiff
-    if (n == 1) {
-      x_mad <- madness::madness(x)
-      y_mad <- f(x_mad)
-      return(madness::dvdx(y_mad))
-    }
-
-    # Recursive Case: An n-th derivative is the 1st derivative of the (n-1)-th derivative
-    # Define a wrapper that calculates the (n-1)-th derivative at any point val
-    lower_order_wrapper <- function(val) {
-      madness_nth_derivative(f, val, n - 1)
-    }
-
-    # Differentiate the lower-order wrapper using madness's internal numeric engine
-    return(madness::numderiv(f = lower_order_wrapper, val = x))
-  }
+  # nth_deriv_TensorFlow <- function(f, x0, n) {
+  #   tensorflow::tf$enable_eager_execution()
+  #   x <- tensorflow::tf$constant(x0, dtype = tf$float32)
+  #   current_y <- f(x)
+  #   for (i in 1:n) {
+  #     with(tensorflow::tf$GradientTape() %as% tensorflow::tape, {
+  #       current_y_val <- current_y
+  #     })
+  #     current_y <- tensorflow::tape$gradient(current_y_val, x)
+  #   }
+  # }
+  #
+  # nth_deriv_madness <- function(f, x0, n) {
+  #   if (n == 0) {
+  #     return(f(x0))
+  #   }
+  #   if (n == 1) {
+  #     x_mad <- madness::madness(x0)
+  #     y_mad <- f(x_mad)
+  #     return(madness::dvdx(y_mad))
+  #   }
+  #   lower_order_wrapper <- function(val) {
+  #     nth_derivative_madness(f, val, n - 1)
+  #   }
+  #   return(madness::numderiv(f = lower_order_wrapper, val = x0))
+  # }
 
   bell_polynomials_up_to_n <- function(n, g_derivs) {
     B <- numeric(n + 1)
@@ -176,14 +168,6 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
       o <- order(abs(tmp))
       B[m + 1] <- sum(tmp[o])
     }
-
-    # for (m in 1:n) {
-    #   sum_val <- 0
-    #   for (k in 1:m) {
-    #     sum_val <- sum_val + choose(m - 1, k - 1) * B[m - k + 1] * g_derivs[k]
-    #   }
-    #   B[m + 1] <- sum_val
-    # }
     return(B)  # B[1] = B_0, ..., B[n+1] = B_n
   }
 
@@ -198,6 +182,7 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
     #lderiv[i] <- suppressWarnings(nth_deriv_richardson(f = log_f, x0 = 0, n = i)) #simply inaccurate
     #lderiv[i] <- suppressWarnings(nth_deriv_numDeriv(f = log_f, x0 = 0, n = i))   #doesn't work because it gives stack overflow
     #lderiv[i] <- suppressWarnings(nth_deriv_TensorFlow(f = log_f, x0 = 0, n = i)) #doesn't work because it requires tensorflow to be installed
+    #lderiv[i] <- suppressWarnings(nth_deriv_madness(f = log_f, x0 = 0, n = i))    #doesn't work, errors
     #lderiv[i] <- suppressWarnings(calculus::derivative(f = log_f, var = c(x = 0), order = i)) #doesn't work as it gives NaN
     lderiv[i] <- suppressWarnings(pnd::GenD(FUN = log_f, x = 0, deriv.order = i)) #slightly better than fderiv
   }
