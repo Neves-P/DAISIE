@@ -178,13 +178,13 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
 
   lderiv <- rep(0,missnumspec)
   for(i in 1:missnumspec) {
-    #lderiv[i] <- suppressWarnings(pracma::fderiv(log_f, x = 0, n = i))
+    lderiv[i] <- suppressWarnings(pracma::fderiv(log_f, x = 0, n = i))
     #lderiv[i] <- suppressWarnings(nth_deriv_richardson(f = log_f, x0 = 0, n = i)) #simply inaccurate
     #lderiv[i] <- suppressWarnings(nth_deriv_numDeriv(f = log_f, x0 = 0, n = i))   #doesn't work because it gives stack overflow
     #lderiv[i] <- suppressWarnings(nth_deriv_TensorFlow(f = log_f, x0 = 0, n = i)) #doesn't work because it requires tensorflow to be installed
     #lderiv[i] <- suppressWarnings(nth_deriv_madness(f = log_f, x0 = 0, n = i))    #doesn't work, errors
     #lderiv[i] <- suppressWarnings(calculus::derivative(f = log_f, var = c(x = 0), order = i)) #doesn't work as it gives NaN
-    lderiv[i] <- suppressWarnings(pnd::GenD(FUN = log_f, x = 0, deriv.order = i)) #slightly better than fderiv
+    #lderiv[i] <- suppressWarnings(pnd::GenD(FUN = log_f, x = 0, deriv.order = i)) #gives deviations
   }
 
   loglikelihood <- log(nth_derivative_from_log(n = missnumspec, f_val = f(0), g_derivs = lderiv)) + lfactorial(S) - lfactorial(S + missnumspec)
