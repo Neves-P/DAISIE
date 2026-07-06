@@ -181,7 +181,6 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
     fz <- 1/(2*pi*1i) * f(z)/z^(S + 1)
     dz_dt <- 1i * z
     return(Re(fz * dz_dt))
-    }
   }
 
   lderiv <- rep(0,missnumspec)

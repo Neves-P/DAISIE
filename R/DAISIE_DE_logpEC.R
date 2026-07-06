@@ -52,9 +52,11 @@ DAISIE_DE_logpEC <- function(brts,
   number_of_species <- length(brts) - 1
   rho <- number_of_species / (missnumspec + number_of_species)
 
-  initial_conditions1   <- c(DE = rho, DM3 = 0, E = 1 - rho, DA3 = 1)
+  init_D <- rho # originally rho
+
+  initial_conditions1   <- c(DE = init_D, DM3 = 0, E = 1 - rho, DA3 = 1)
   if (stac == 3) {
-    initial_conditions1 <- c(DE = rho, DM3 = 1, E = 1 - rho, DA3 = 0)
+    initial_conditions1 <- c(DE = init_D, DM3 = 1, E = 1 - rho, DA3 = 0)
   }
 
   solution0 <- DAISIE_DE_solve_branch(interval_func = interval2_EC,
