@@ -176,6 +176,14 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
     return(f_val * B[n + 1])
   }
 
+  integrand <- function(t) {
+    z <- exp(1i * t)
+    fz <- 1/(2*pi*1i) * f(z)/z^(S + 1)
+    dz_dt <- 1i * z
+    return(Re(fz * dz_dt))
+    }
+  }
+
   lderiv <- rep(0,missnumspec)
   for(i in 1:missnumspec) {
     lderiv[i] <- suppressWarnings(pracma::fderiv(log_f, x = 0, n = i))
@@ -188,6 +196,7 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
   }
 
   loglikelihood <- log(nth_derivative_from_log(n = missnumspec, f_val = f(0), g_derivs = lderiv)) + lfactorial(S) - lfactorial(S + missnumspec)
+  #loglikelihood <- log(integrate(integrand(R = 0.9), lower = 0, upper = 2 * pi)) - lchoose(S + missnumspec, S)
   #loglikelihood <- log(pracma::fderiv(f, x = 0, n = missnumspec)) + lfactorial(S) - lfactorial(S + missnumspec)
   #loglikelihood <- log(calculus::derivative(f, var = c(x = 0), order = missnumspec)) + lfactorial(S) - lfactorial(S + missnumspec)
   #loglikelihood <- scaled_coeff(f, n = missnumspec, S = S, N = N_cheb)
