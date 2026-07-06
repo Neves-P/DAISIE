@@ -178,7 +178,7 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
 
   integrand <- function(t) {
     z <- exp(1i * t)
-    fz <- 1/(2*pi*1i) * f(z)/z^(S + 1)
+    fz <- 1/(2*pi*1i) * f(z)/(z^(missnumspec + 1))
     dz_dt <- 1i * z
     return(Re(fz * dz_dt))
   }
