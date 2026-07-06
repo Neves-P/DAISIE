@@ -64,6 +64,8 @@ DAISIE_DE_loglik_CS <- function( pars1,
     stac <- datalist[[i]]$stac
     brts <- datalist[[i]]$branching_times
     missnumspec <- datalist[[i]]$missing_species
+    S <- length(brts) - 1
+    fac <- S * (log(S) - log(S + missnumspec))
 
     if (stac == 1 || stac == 4 || stac == 8) {
       loglikelihood <- DAISIE_DE_logpNE(brts = brts,
@@ -81,7 +83,7 @@ DAISIE_DE_loglik_CS <- function( pars1,
                                           pars1 = pars1,
                                           methode = methode,
                                           reltolint = 1e-15,
-                                          abstolint = 1e-15)
+                                          abstolint = 1e-15) + fac
       else
         loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpES,
                                      brts = brts,
@@ -99,7 +101,7 @@ DAISIE_DE_loglik_CS <- function( pars1,
                                           pars1 = pars1,
                                           methode = methode,
                                           reltolint = 1e-15,
-                                          abstolint = 1e-15)
+                                          abstolint = 1e-15) + fac
       else
         loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpEC,
                                      brts = brts,

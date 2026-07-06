@@ -1265,7 +1265,7 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
       }
     }
   }
-
+  if(length(pars) == 5) pars[6] <- 0
   print_parameters_and_loglik(pars = pars,
                               loglik = loglik,
                               verbose = pars2[4],

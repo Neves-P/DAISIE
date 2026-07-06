@@ -51,7 +51,7 @@ DAISIE_DE_logpES <- function(brts,
   number_of_species <- length(brts) - 1
   rho <- number_of_species / (missnumspec + number_of_species)
 
-  init_D <- rho #originally rho
+  init_D <- 1 #originally rho
 
   #pES
   initial_conditions1 <- c(DE = init_D, DM2 = 0, DM3 = 0, E = 1 - rho, DA3 = 1)

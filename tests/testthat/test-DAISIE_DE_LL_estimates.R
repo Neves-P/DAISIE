@@ -213,16 +213,14 @@ test_that("DE_loglik_CS is correct", {
                                        reltolint = 1e-16,
                                        equal_extinction = TRUE)
 
-
-
   pars1 <- c(2.546591, 2.678781, Inf, 0.009326754, 1.008583)
-  ll2 <-   DAISIE:::DAISIE_loglik_CS(pars1 = pars1,
-                                     pars2 = c(100, 1, 0, 2),
-                                     datalist = datalist,
-                                     methode = "odeint::runge_kutta_cash_karp54",
-                                     abstolint = 1e-16,
-                                     reltolint = 1e-16,
-                                     CS_version = list(model = 1, function_to_optimize = "DAISIE"))
+  ll2 <- DAISIE:::DAISIE_loglik_CS(pars1 = pars1,
+                                   pars2 = c(100, 1, 0, 2),
+                                   datalist = datalist,
+                                   methode = "odeint::runge_kutta_cash_karp54",
+                                   abstolint = 1e-16,
+                                   reltolint = 1e-16,
+                                   CS_version = list(model = 1, function_to_optimize = "DAISIE"))
   testthat::expect_equal(ll1, ll2)
 
   pars1 <- c(2.546591, 2.678781, 2.678781, 0.009326754, 1.008583)
@@ -234,4 +232,15 @@ test_that("DE_loglik_CS is correct", {
                                        reltolint = 1e-16,
                                        equal_extinction = TRUE)
   testthat::expect_equal(ll1, ll2)
+
+  datalist[[5]]$missing_species <- 2
+  ll3 <- DAISIE:::DAISIE_DE_loglik_CS( pars1 = pars1,
+                                       pars2 = c(100, 11, 0, 2),
+                                       datalist = datalist,
+                                       methode = "odeint::runge_kutta_cash_karp54",
+                                       abstolint = 1e-16,
+                                       reltolint = 1e-16,
+                                       equal_extinction = TRUE,
+                                       sampling = 'rho')
+  testthat::expect_equal(ll3, -75.157801, tol = 1E-5)
 })

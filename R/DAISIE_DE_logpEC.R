@@ -52,7 +52,7 @@ DAISIE_DE_logpEC <- function(brts,
   number_of_species <- length(brts) - 1
   rho <- number_of_species / (missnumspec + number_of_species)
 
-  init_D <- rho # originally rho
+  init_D <- 1 # originally rho
 
   initial_conditions1   <- c(DE = init_D, DM3 = 0, E = 1 - rho, DA3 = 1)
   if (stac == 3) {

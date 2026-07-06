@@ -10,10 +10,15 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
 
   S <- length(brts) - 1          # given S the observed number of species
 
+  # print(S)
+  # rho <- S / (missnumspec + S)
+  # print(rho)
+  # print(S * log(rho))
+
   f <- function(x) {
     rho2n <- -S + S/(1 - x)
     DAISIE_DE_function <- Vectorize(DAISIE_DE_function, "missnumspec")
-    lik <- exp(-S * log(1 - x) + DAISIE_DE_function(brts = brts,
+    lik <- exp(DAISIE_DE_function(brts = brts,
                                   missnumspec = rho2n,
                                   stac = stac,
                                   pars1 = pars1,
@@ -26,13 +31,13 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
   log_f <- function(x) {
     rho2n <- -S + S/(1 - x)
     DAISIE_DE_function <- Vectorize(DAISIE_DE_function, "missnumspec")
-    loglik <- -S * log(1 - x) + DAISIE_DE_function(brts = brts,
-                                                   missnumspec = rho2n,
-                                                   stac = stac,
-                                                   pars1 = pars1,
-                                                   methode = methode,
-                                                   reltolint = reltolint,
-                                                   abstolint = abstolint)
+    loglik <- DAISIE_DE_function(brts = brts,
+                                 missnumspec = rho2n,
+                                 stac = stac,
+                                 pars1 = pars1,
+                                 methode = methode,
+                                 reltolint = reltolint,
+                                 abstolint = abstolint)
     return(loglik)
   }
 
@@ -195,7 +200,7 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
   }
 
   loglikelihood <- log(nth_derivative_from_log(n = missnumspec, f_val = f(0), g_derivs = lderiv)) + lfactorial(S) - lfactorial(S + missnumspec)
-  #loglikelihood <- log(integrate(integrand(R = 0.9), lower = 0, upper = 2 * pi)) - lchoose(S + missnumspec, S)
+  #loglikelihood <- log(integrate(integrand, lower = 0, upper = 2 * pi)) - lchoose(S + missnumspec, S)
   #loglikelihood <- log(pracma::fderiv(f, x = 0, n = missnumspec)) + lfactorial(S) - lfactorial(S + missnumspec)
   #loglikelihood <- log(calculus::derivative(f, var = c(x = 0), order = missnumspec)) + lfactorial(S) - lfactorial(S + missnumspec)
   #loglikelihood <- scaled_coeff(f, n = missnumspec, S = S, N = N_cheb)

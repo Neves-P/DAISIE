@@ -4,7 +4,6 @@ test_that("DAISIE_DE_n gives the same result as DAISIE", {
   brts <- c(10,5, 3, 2)
   stac <- 2
   missnumspec <- 8
-  N_cheb <- 100
   methode <- 'odeint::runge_kutta_cash_karp54'
   abstolint <- 1E-12
   reltolint <- 1E-10
@@ -58,7 +57,8 @@ test_that("DAISIE_DE_n gives the same result as DAISIE", {
     return(loglikelihood)
   }
   loglikelihood1 <- loglik_fun(pars1, brts, missnumspec, methode)
-  #testthat::expect_equal(loglik1, loglikelihood1, tol = 1E-5) #-11.22540681977405085945, -11.22535738310295094777
+  #print(sprintf('%0.16f ',loglikelihood1))
+  testthat::expect_equal(loglik1, loglikelihood1, tol = 1E-5) #-11.22540681977405085945, -11.22535738310295094777 / -11.2253390802734039
 
   pars1 <- c(0.25,0.1,Inf,0.01,0.1)
   loglik2 <- DAISIE_loglik(
@@ -75,21 +75,20 @@ test_that("DAISIE_DE_n gives the same result as DAISIE", {
   )
   pars1[3] <- pars1[2]
   loglikelihood2 <- loglik_fun(pars1, brts, missnumspec, methode)
-  testthat::expect_equal(loglik2, loglikelihood2, tol = 1E-4) #-13.51826715621074193052, -13.51850213765633235141"
-  #testthat::expect_equal(loglik2 - loglik1, loglikelihood2 - loglikelihood1, tol = 1E-3)
+  #print(sprintf('%0.16f ',loglikelihood2))
+  testthat::expect_equal(loglik2, loglikelihood2, tol = 1E-5) #-13.51826715621074193052, -13.51850213765633235141 / -13.5182968721357373
 
   pars1 <- c(0.5,0.1,Inf,0.01,0.1)
   pars2 <- c(100,0,0,1)
   brts <- c(10, 5)
   stac <- 2
   missnumspec <- 4
-  N_cheb <- 100
   methode <- 'odeint::runge_kutta_cash_karp54'
   abstolint <- 1E-12
   reltolint <- 1E-10
   verbose <- 1
   CS_version <- list(model = 1, function_to_optimize = 'DAISIE')
-  loglik <- DAISIE_loglik(
+  loglik3 <- DAISIE_loglik(
     pars1 = pars1,
     pars2 = pars2,
     brts = brts,
@@ -104,6 +103,7 @@ test_that("DAISIE_DE_n gives the same result as DAISIE", {
 
   pars1[3] <- pars1[2]
   methode <- 'odeint::runge_kutta_cash_karp54'
-  loglikelihood <- loglik_fun(pars1, brts, missnumspec, methode)
-  testthat::expect_equal(loglik, loglikelihood, tol = 1E-5) #-7.53368410913773978166, -7.53369312265383328509
+  loglikelihood3 <- loglik_fun(pars1, brts, missnumspec, methode)
+  #print(sprintf('%0.16f ',loglikelihood3))
+  testthat::expect_equal(loglik3, loglikelihood3, tol = 1E-5) #-7.53368410913773978166, -7.53369312265383328509 / -7.5336902619524775
 })
