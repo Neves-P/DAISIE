@@ -10,11 +10,6 @@ DAISIE_DE_n <- function(DAISIE_DE_function,
 
   S <- length(brts) - 1          # given S the observed number of species
 
-  # print(S)
-  # rho <- S / (missnumspec + S)
-  # print(rho)
-  # print(S * log(rho))
-
   f <- function(x) {
     rho2n <- -S + S/(1 - x)
     DAISIE_DE_function <- Vectorize(DAISIE_DE_function, "missnumspec")

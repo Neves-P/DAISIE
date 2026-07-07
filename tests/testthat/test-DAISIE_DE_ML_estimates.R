@@ -80,13 +80,16 @@ test_that("DAISIE_DE and DAISIE give same results when there are missing species
   pars1 <- c(0.2, 0.1, 0.1, 0.02, 0.03)
   brts <- c(4.000, 0.855)
   missnumspec <- 5
+  S <- length(brts) - 1
+  fac <- S * (log(S) - log(S + missnumspec))
+
   loglik_DE <- DAISIE:::DAISIE_DE_logpES(brts = brts,
                                 missnumspec = missnumspec,
                                 pars1 = pars1,
                                 stac = 2,
                                 methode = "odeint::runge_kutta_cash_karp54",
                                 reltolint = 1e-16,
-                                abstolint = 1e-16)
+                                abstolint = 1e-16) + fac
   pars1[3] <- Inf
   lik <- 0
   S <- length(brts) - 1

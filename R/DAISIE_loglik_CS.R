@@ -1265,8 +1265,8 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
       }
     }
   }
-  #if(length(pars) == 5) pars[6] <- 0
-  print_parameters_and_loglik(pars = pars,
+  if(length(pars1) == 5) pars1[6] <- 0
+  print_parameters_and_loglik(pars = pars1,
                               loglik = loglik,
                               verbose = pars2[4],
                               parnames = c("lambda^c", "mu", "K", "gamma", "lambda^a", "prob_init_pres"),
