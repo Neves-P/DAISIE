@@ -68,7 +68,6 @@ DAISIE_DE_logpES <- function(brts,
     time1 <- c(tp, t2)
   }
 
-
   # Time sequence for interval [t1, tp]
   solution1 <- DAISIE_DE_solve_branch(interval_func = interval_func,
                                       initial_conditions = initial_conditions1,

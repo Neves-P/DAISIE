@@ -92,7 +92,6 @@ test_that("DAISIE_DE and DAISIE give same results when there are missing species
                                 abstolint = 1e-16) + fac
   pars1[3] <- Inf
   lik <- 0
-  S <- length(brts) - 1
   for(i in 0:300) {
     lik <- lik + exp(dbinom(i, S + i,prob = missnumspec/(S + missnumspec), log = TRUE) +
                        DAISIE:::DAISIE_loglik(brts = brts,

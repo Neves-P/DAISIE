@@ -8,7 +8,7 @@ test_that("DAISIE_DE_n gives the same result as DAISIE", {
   abstolint <- 1E-12
   reltolint <- 1E-10
   verbose <- 1
-  CS_version <- list(model = 1, function_to_optimize = 'DAISIE')
+  CS_version <- list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n')
   loglik1 <- DAISIE_loglik(
     pars1 = pars1,
     pars2 = pars2,
@@ -56,6 +56,7 @@ test_that("DAISIE_DE_n gives the same result as DAISIE", {
     }
     return(loglikelihood)
   }
+  #methode <- 'ode45'
   loglikelihood1 <- loglik_fun(pars1, brts, missnumspec, methode)
   #print(sprintf('%0.16f ',loglikelihood1))
   testthat::expect_equal(loglik1, loglikelihood1, tol = 1E-5) #-11.22540681977405085945, -11.22535738310295094777 / -11.2253390802734039
