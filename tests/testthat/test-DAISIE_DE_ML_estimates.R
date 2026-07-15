@@ -26,7 +26,8 @@ test_that("DAISIE_ML_CS: DAISIE_DE with equal_extinction = TRUE matches DAISIE",
     verbose = 0,
     methode = 'odeint::runge_kutta_cash_karp54',
     CS_version = list(model = 1,
-                      function_to_optimize = 'DAISIE_DE'),
+                      function_to_optimize = 'DAISIE_DE',
+                      sampling = 'rho'),
     equal_extinction = TRUE
   )))
 

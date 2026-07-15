@@ -134,7 +134,7 @@ test_that("DAISIE_loglik_CS_M1 produces correct output",{
     methode = 'ode45',
     reltolint = 1E-16,
     abstolint = 1E-16,
-    CS_version = list(1,function_to_optimize = 'DAISIE_approx'))
+    CS_version = list(model = 1,function_to_optimize = 'DAISIE_approx', sampling = 'n'))
   testthat::expect_equal(loglik_DAISIE_approx,loglik_DAISIE,1E-6)
 })
 
