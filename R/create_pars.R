@@ -184,6 +184,7 @@ create_trait_pars_2K <- function(trans_rate,
 #' model
 #' @param function_to_optimize likelihood function that must be optimized in ML,
 #'  either 'DAISIE', 'DAISIE_approx', or 'DAISIE_DE'
+#' @param sampling sampling method, either 'n' or 'rho'
 #' @param relaxed_par the parameter to relax (integrate over). Options are
 #' \code{"cladogenesis"},
 #' \code{"extinction"},
@@ -205,6 +206,7 @@ create_trait_pars_2K <- function(trans_rate,
 #'   model}
 #'   \item{fumction_to_optimize} likelihood function that must be optimized in
 #'   ML, either 'DAISIE', 'DAISIE_approx', or 'DAISIE_DE'
+#'   \item{sampling} sampling method, either 'n' or 'rho'
 #'   \item{relaxed_par: the parameter to relax (integrate over), for model = 2.}
 #'   \item{par_sd: the standard deviation of the parameter to relax}
 #'   \item{par_upperbound: upper bound of the parameter to relax.}
