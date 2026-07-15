@@ -220,6 +220,7 @@ create_trait_pars_2K <- function(trans_rate,
 #' @export
 create_CS_version <- function(model = 1,
                               function_to_optimize = 'DAISIE',
+                              sampling = 'n',
                               relaxed_par = NULL,
                               par_sd = 0,
                               par_upper_bound = Inf,
@@ -239,6 +240,7 @@ create_CS_version <- function(model = 1,
     if(integration_method == 'MC')
       CS_version <- list(model = model,
                          function_to_optimize = function_to_optimize,
+                         sampling = sampling,
                          relaxed_par = relaxed_par,
                          par_sd = par_sd,
                          par_upper_bound = par_upper_bound,
@@ -250,6 +252,7 @@ create_CS_version <- function(model = 1,
     else if(integration_method == 'stratified')
       CS_version <- list(model = model,
                          function_to_optimize = function_to_optimize,
+                         sampling = sampling,
                          relaxed_par = relaxed_par,
                          par_sd = par_sd,
                          par_upper_bound = par_upper_bound,
@@ -260,13 +263,15 @@ create_CS_version <- function(model = 1,
     else if(integration_method == 'standard')
       CS_version <- list(model = model,
                          function_to_optimize = function_to_optimize,
+                         sampling = sampling,
                          relaxed_par = relaxed_par,
                          par_sd = par_sd,
                          par_upper_bound = par_upper_bound,
                          integration_method = 'standard')
   } else {
     CS_version <- list(model = model,
-                       function_to_optimize = function_to_optimize)
+                       function_to_optimize = function_to_optimize,
+                       sampling = sampling)
   }
   return(CS_version)
 }
