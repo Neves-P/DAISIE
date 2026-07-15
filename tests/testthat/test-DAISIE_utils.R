@@ -231,7 +231,8 @@ test_that("counttype1", {
 test_that("create_CS_version produces correct output", {
   CS_version <- create_CS_version(model = 1)
   testthat::expect_equal(CS_version, list(model = 1,
-                                          function_to_optimize = 'DAISIE'))
+                                          function_to_optimize = 'DAISIE',
+                                          sampling = 'n'))
   CS_version <- create_CS_version(model = 2,
                                   relaxed_par = "cladogenesis",
                                   par_sd = 10,
@@ -245,7 +246,6 @@ test_that("create_CS_version produces correct output", {
   CS_version <- create_CS_version(model = 3)
   testthat::expect_equal(CS_version, list(model = 3,
                                           function_to_optimize = 'DAISIE'))
-
 })
 
 test_that("abuse create_CS_version", {

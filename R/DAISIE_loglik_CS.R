@@ -530,7 +530,7 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
                                                  abstolint = 1E-16,
                                                  reltolint = 1E-10,
                                                  verbose = 0,
-                                                 CS_version = list(model = 1, function_to_optimize = 'DAISIE')) {
+                                                 CS_version = list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n')) {
   # stac = status of the clade formed by the immigrant
   #  . stac == 1 : immigrant is present but has not formed an extant clade
   #  . stac == 2 : immigrant is not present but has formed an extant clade
@@ -903,7 +903,7 @@ DAISIE_loglik_CS_choice <- function(
     stac,
     missnumspec,
     methode = "odeint::runge_kutta_cash_karp54",
-    CS_version = list(model = 1, function_to_optimize = 'DAISIE'),
+    CS_version = list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n'),
     abstolint = 1E-16,
     reltolint = 1E-10
 )
@@ -1064,7 +1064,7 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
     pars2,
     datalist,
     methode = "odeint::runge_kutta_cash_karp54",
-    CS_version = list(model = 1, function_to_optimize = 'DAISIE'),
+    CS_version = list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n'),
     abstolint = 1E-16,
     reltolint = 1E-10) {
 
@@ -1689,7 +1689,7 @@ DAISIE_logp0 <- function(pars1,
                          pars2,
                          island_age,
                          methode = "odeint::runge_kutta_cash_karp54",
-                         CS_version = list(model = 1, function_to_optimize = 'DAISIE'),
+                         CS_version = list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n'),
                          abstolint = 1E-16,
                          reltolint = 1E-10) {
   logp0 <- DAISIE_loglik_CS_choice(

@@ -220,7 +220,7 @@ test_that("DE_loglik_CS is correct", {
                                    methode = "odeint::runge_kutta_cash_karp54",
                                    abstolint = 1e-16,
                                    reltolint = 1e-16,
-                                   CS_version = list(model = 1, function_to_optimize = "DAISIE"))
+                                   CS_version = list(model = 1, function_to_optimize = "DAISIE", sampling = 'n'))
   testthat::expect_equal(ll1, ll2)
 
   pars1 <- c(2.546591, 2.678781, 2.678781, 0.009326754, 1.008583)
