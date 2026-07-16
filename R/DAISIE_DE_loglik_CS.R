@@ -6,6 +6,8 @@ DAISIE_DE_loglik <- function(pars1,
                              reltolint = 1e-15,
                              abstolint = 1e-15,
                              sampling = 'rho') {
+  S <- length(brts) - 1
+  fac <- S * (log(S) - log(S + missnumspec))
   if( stac == 0) {
     loglikelihood <- DAISIE_DE_logp0(island_age = brts[1],
                                      pars1 = pars1,
@@ -128,15 +130,13 @@ DAISIE_DE_loglik_CS <- function( pars1,
     stac <- datalist[[i]]$stac
     brts <- datalist[[i]]$branching_times
     missnumspec <- datalist[[i]]$missing_species
-    S <- length(brts) - 1
-    fac <- S * (log(S) - log(S + missnumspec))
     loglikelihood <- DAISIE_DE_loglik(pars1 = pars1,
                                       brts = brts,
                                       missnumspec = missnumspec,
                                       stac = stac,
                                       methode = methode,
                                       reltolint = reltolint,
-                                      abstolint = abstolint.
+                                      abstolint = abstolint,
                                       sampling = sampling)
 
     vec_loglikelihood <- c(vec_loglikelihood, loglikelihood)
