@@ -1074,7 +1074,7 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
                                     pars2 = pars2,
                                     datalist = datalist,
                                     methode = methode,
-                                    abstolint = absoltint,
+                                    abstolint = abstolint,
                                     reltolint = reltolint,
                                     equal_extinction = TRUE,
                                     sampling = CS_version$sampling)
