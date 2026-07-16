@@ -1,3 +1,67 @@
+DAISIE_DE_loglik <- function(pars1,
+                             brts,
+                             missnumspec,
+                             stac,
+                             methode,
+                             reltolint = 1e-15,
+                             abstolint = 1e-15,
+                             sampling = 'rho') {
+  if( stac == 0) {
+    loglikelihood <- DAISIE_DE_logp0(island_age = brts[1],
+                                     pars1 = pars1,
+                                     reltolint = abstolint,
+                                     abstolint = reltolint,
+                                     methode = methode)
+  } else if (stac == 1 || stac == 4 || stac == 8) {
+    loglikelihood <- DAISIE_DE_logpNE(brts = brts,
+                                      pars1 = pars1,
+                                      stac = stac,
+                                      methode = methode,
+                                      reltolint = reltolint,
+                                      abstolint = abstolint)
+
+  } else if (stac == 2 && length(brts) == 2 || stac == 3 && length(brts) == 2 || stac == 5 && length(brts) == 2 || stac == 9) {
+    if(sampling == 'rho' || missnumspec == 0)
+      loglikelihood <- DAISIE_DE_logpES(brts = brts,
+                                        missnumspec = missnumspec,
+                                        stac = stac,
+                                        pars1 = pars1,
+                                        methode = methode,
+                                        reltolint = reltolint,
+                                        abstolint = abstolint) + fac
+    else
+      loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpES,
+                                   brts = brts,
+                                   missnumspec = missnumspec,
+                                   stac = stac,
+                                   pars1 = pars1,
+                                   methode = methode,
+                                   reltolint = reltolint,
+                                   abstolint = abstolint)
+  } else if (stac == 2 && length(brts) > 2 || stac == 3 && length(brts) > 2 || stac == 6) {
+    if(sampling == 'rho' || missnumspec == 0)
+      loglikelihood <- DAISIE_DE_logpEC(brts = brts,
+                                        missnumspec = missnumspec,
+                                        stac = stac,
+                                        pars1 = pars1,
+                                        methode = methode,
+                                        reltolint = reltolint,
+                                        abstolint = abstolint) + fac
+    else
+      loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpEC,
+                                   brts = brts,
+                                   missnumspec = missnumspec,
+                                   stac = stac,
+                                   pars1 = pars1,
+                                   methode = methode,
+                                   reltolint = reltolint,
+                                   abstolint = abstolint)
+  } else {
+    stop("Unknown stac value: ", stac)
+  }
+  return(loglikelihood)
+}
+
 DAISIE_DE_loglik_CS <- function( pars1,
                                  pars2,
                                  datalist,
@@ -17,8 +81,8 @@ DAISIE_DE_loglik_CS <- function( pars1,
   if (length(parameter) == 5) {
     logp0 <- DAISIE_DE_logp0(island_age = island_age,
                              pars1 = pars1,
-                             reltolint = 1e-12,
-                             abstolint = 1e-12,
+                             reltolint = reltolint, #was 1E-12
+                             abstolint = abstolint, #was 1E-12
                              methode = methode)
     if (is.null(datalist[[1]]$not_present)) {
       loglik <- (datalist[[1]]$not_present_type1 + datalist[[1]]$not_present_type2) * logp0
@@ -45,13 +109,13 @@ DAISIE_DE_loglik_CS <- function( pars1,
     logp0_type1 <- DAISIE_DE_logp0(island_age = island_age,
                                    pars1 = pars1,
                                    methode = methode,
-                                   reltolint = 1e-12,
-                                   abstolint = 1e-12)
+                                   reltolint = reltolint,
+                                   abstolint = abstolint)
     logp0_type2 <- DAISIE_DE_logp0(island_age = island_age,
                                    pars1 = pars1,
                                    methode = methode,
-                                   reltolint = 1e-12,
-                                   abstolint = 1e-12)
+                                   reltolint = reltolint,
+                                   abstolint = abstolint)
     loglik <- datalist[[1]]$not_present_type1 * logp0_type1 + datalist[[1]]$not_present_type2 * logp0_type2
     logcond <- (cond == 1) * log(1 - exp((datalist[[1]]$not_present_type1 + numimm_type1) * logp0_type1 +
                                          (datalist[[1]]$not_present_type2 + numimm_type2) * logp0_type2))
@@ -66,54 +130,14 @@ DAISIE_DE_loglik_CS <- function( pars1,
     missnumspec <- datalist[[i]]$missing_species
     S <- length(brts) - 1
     fac <- S * (log(S) - log(S + missnumspec))
-
-    if (stac == 1 || stac == 4 || stac == 8) {
-      loglikelihood <- DAISIE_DE_logpNE(brts = brts,
-                                        pars1 = pars1,
-                                        stac = stac,
-                                        methode = methode,
-                                        reltolint,
-                                        abstolint)
-
-    } else if (stac == 2 && length(brts) == 2 || stac == 3 && length(brts) == 2 || stac == 5 && length(brts) == 2 || stac == 9) {
-      if(sampling == 'rho' || missnumspec == 0)
-        loglikelihood <- DAISIE_DE_logpES(brts = brts,
-                                          missnumspec = missnumspec,
-                                          stac = stac,
-                                          pars1 = pars1,
-                                          methode = methode,
-                                          reltolint = 1e-15,
-                                          abstolint = 1e-15) + fac
-      else
-        loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpES,
-                                     brts = brts,
-                                     missnumspec = missnumspec,
-                                     stac = stac,
-                                     pars1 = pars1,
-                                     methode = methode,
-                                     reltolint = 1e-15,
-                                     abstolint = 1e-15)
-    } else if (stac == 2 && length(brts) > 2 || stac == 3 && length(brts) > 2 || stac == 6) {
-      if(sampling == 'rho' || missnumspec == 0)
-        loglikelihood <- DAISIE_DE_logpEC(brts = brts,
-                                          missnumspec = missnumspec,
-                                          stac = stac,
-                                          pars1 = pars1,
-                                          methode = methode,
-                                          reltolint = 1e-15,
-                                          abstolint = 1e-15) + fac
-      else
-        loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpEC,
-                                     brts = brts,
-                                     missnumspec = missnumspec,
-                                     stac = stac,
-                                     pars1 = pars1,
-                                     methode = methode,
-                                     reltolint = 1e-15,
-                                     abstolint = 1e-15)
-    } else {
-      stop("Unknown stac value: ", stac)
-    }
+    loglikelihood <- DAISIE_DE_loglik(pars1 = pars1,
+                                      brts = brts,
+                                      missnumspec = missnumspec,
+                                      stac = stac,
+                                      methode = methode,
+                                      reltolint = reltolint,
+                                      abstolint = abstolint.
+                                      sampling = sampling)
 
     vec_loglikelihood <- c(vec_loglikelihood, loglikelihood)
 
@@ -128,4 +152,3 @@ DAISIE_DE_loglik_CS <- function( pars1,
   loglik <- sum(vec_loglikelihood) + loglik
   return(loglik)
 }
-
