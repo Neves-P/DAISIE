@@ -136,7 +136,7 @@ DAISIE_DE_loglik_CS <- function( pars1,
                                       stac = stac,
                                       methode = methode,
                                       reltolint = reltolint,
-                                      abstolint = abstolint.
+                                      abstolint = abstolint,
                                       sampling = sampling)
 
     vec_loglikelihood <- c(vec_loglikelihood, loglikelihood)
