@@ -1069,16 +1069,18 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
     reltolint = 1E-10) {
 
   if (length(CS_version) > 1) {
-    if (CS_version$function_to_optimize == 'DAISIE_DE') {
-      loglik <- DAISIE_DE_loglik_CS(pars1 = pars1,
-                                    pars2 = pars2,
-                                    datalist = datalist,
-                                    methode = methode,
-                                    abstolint = abstolint,
-                                    reltolint = reltolint,
-                                    equal_extinction = TRUE,
-                                    sampling = CS_version$sampling)
-      return(loglik)
+    if (length(CS_version$function_to_optimize) > 0) {
+      if( CS_version$function_to_optimize == 'DAISIE_DE') {
+        loglik <- DAISIE_DE_loglik_CS(pars1 = pars1,
+                                      pars2 = pars2,
+                                      datalist = datalist,
+                                      methode = methode,
+                                      abstolint = abstolint,
+                                      reltolint = reltolint,
+                                      equal_extinction = TRUE,
+                                      sampling = CS_version$sampling)
+        return(loglik)
+      }
     }
   }
   if (length(pars1) == 14) {
