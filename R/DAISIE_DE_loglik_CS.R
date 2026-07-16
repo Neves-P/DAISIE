@@ -30,7 +30,7 @@ DAISIE_DE_loglik <- function(pars1,
                                         pars1 = pars1,
                                         methode = methode,
                                         reltolint = reltolint,
-                                        abstolint = abstolint)
+                                        abstolint = abstolint) + fac
     else
       loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpES,
                                    brts = brts,
@@ -48,7 +48,7 @@ DAISIE_DE_loglik <- function(pars1,
                                         pars1 = pars1,
                                         methode = methode,
                                         reltolint = reltolint,
-                                        abstolint = abstolint)
+                                        abstolint = abstolint) + fac
     else
       loglikelihood <- DAISIE_DE_n(DAISIE_DE_function = DAISIE_DE_logpEC,
                                    brts = brts,
