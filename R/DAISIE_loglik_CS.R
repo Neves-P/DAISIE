@@ -1068,6 +1068,19 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
     abstolint = 1E-16,
     reltolint = 1E-10) {
 
+  if (length(CS_version) > 1) {
+    if (CS_version$function_to_optimize == 'DAISIE_DE') {
+      loglik <- DAISIE_DE_loglik_CS(pars1 = pars1,
+                                    pars2 = pars2,
+                                    datalist = datalist,
+                                    methode = methode,
+                                    abstolint = absoltint,
+                                    reltolint = reltolint,
+                                    equal_extinction = TRUE,
+                                    sampling = CS_version$sampling)
+      return(loglik)
+    }
+  }
   if (length(pars1) == 14) {
     if (datalist[[1]]$island_age > pars1[11]) {
       stop(
