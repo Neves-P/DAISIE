@@ -715,28 +715,27 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
               nndd <- nndivdep_CS(lx1 = lx1, lx2 = lx2, K = K, k = 0)
               parslist <- list(pars = pars1, k = 0, ddep = ddep, nndd = nndd)
               probs <- DAISIE_integrate(probs,brts[2:3],DAISIE_loglik_rhs3,parslist,rtol = reltolint,atol = abstolint,method = methode)
-              if (stac %in% c(1, 5))
-              {
-                loglik <- loglik + log(probs[lx + (stac == 1) * (lx1 * lx2) + (stac == 5) * lx1 + 1 + missnumspec])
-              } else if (stac %in% c(6, 7, 8, 9))
-              {
-                probs2 <- rep(0, 3 * lx)
-                probs3 <- probs[(lx1 + 1):(lx1 + lx1 * lx2)]
-                dim(probs3) <- c(lx1,lx2)
-                probs3[1:lx1,1:(lx2 - 1)] <- probs3[1:lx1,2:lx2] * matrix(1:(lx2 - 1),lx1,lx2 - 1,byrow = T)
-                probs4 <- probs[(lx1 + lx1 * lx2 + 1):(lx1 + 2 * lx1 * lx2)]
-                dim(probs4) <- c(lx1,lx2)
-                probs5 <- probs4
-                probs4[1:lx1,1:(lx2 - 1)] <- probs4[1:lx1,2:lx2] * matrix(1:(lx2 - 1),lx1,lx2 - 1,byrow = T)
-                for(cnt in 2:(lx + 1)) {
-                  probs2[cnt - 1] <- sum(probs3[row(probs3) + col(probs3) == cnt])
-                  probs2[lx + cnt - 1] <- sum(probs4[row(probs4) + col(probs4) == cnt])
-                  probs2[2 * lx + cnt - 1] <- sum(probs5[row(probs5) + col(probs5) == cnt])
-                }
-                probs <- probs2
-                rm(probs2, probs3, probs4, probs5)
+              probs2 <- rep(0, 3 * lx)
+              probs3 <- probs[(lx1 + 1):(lx1 + lx1 * lx2)]
+              dim(probs3) <- c(lx1,lx2)
+              probs3[1:lx1,1:(lx2 - 1)] <- probs3[1:lx1,2:lx2] * matrix(1:(lx2 - 1),lx1,lx2 - 1,byrow = T)
+              probs4 <- probs[(lx1 + lx1 * lx2 + 1):(lx1 + 2 * lx1 * lx2)]
+              dim(probs4) <- c(lx1,lx2)
+              probs5 <- probs4
+              probs4[1:lx1,1:(lx2 - 1)] <- probs4[1:lx1,2:lx2] * matrix(1:(lx2 - 1),lx1,lx2 - 1,byrow = T)
+              for(cnt in 2:(lx + 1)) {
+                probs2[cnt - 1] <- sum(probs3[row(probs3) + col(probs3) == cnt])
+                probs2[lx + cnt - 1] <- sum(probs4[row(probs4) + col(probs4) == cnt])
+                probs2[2 * lx + cnt - 1] <- sum(probs5[row(probs5) + col(probs5) == cnt])
               }
+              probs <- probs2
+              rm(probs2, probs3, probs4, probs5)
             }
+            if (stac %in% c(1, 5))
+            {
+              loglik <- loglik + log(probs2[(stac == 1) * lx + (stac == 5) + 1 + missnumspec])
+            } else if (stac %in% c(6, 7, 8, 9))
+            {
           } else
           { #max age equals island age
             probs2 <- rep(0, 4 * lx)
