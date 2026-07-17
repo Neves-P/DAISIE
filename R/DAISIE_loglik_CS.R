@@ -734,8 +734,7 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
             if (stac %in% c(1, 5))
             {
               loglik <- loglik + log(probs2[(stac == 1) * lx + (stac == 5) + 1 + missnumspec])
-            } else if (stac %in% c(6, 7, 8, 9))
-            {
+            }
           } else
           { #max age equals island age
             probs2 <- rep(0, 4 * lx)
