@@ -733,7 +733,7 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
             }
             if (stac %in% c(1, 5))
             {
-              loglik <- loglik + log(probs[(stac == 1) * lx + 0*(stac == 5) + 1 + missnumspec])
+              loglik <- loglik + log(probs[(stac == 1) * lx + 1 + missnumspec])
             }
           } else
           { #max age equals island age
@@ -746,7 +746,7 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
             cp <- checkprobs2(lx, loglik, probs, verbose); loglik <- cp[[1]]; probs <- cp[[2]]
             if (stac %in% c(1, 5))
             {
-              loglik <- loglik + log(probs[(stac == 1) * lx + (stac == 5) + 1 + missnumspec])
+              loglik <- loglik + log(probs[(stac == 1) * lx + 1 + missnumspec])
             } else if (stac %in% c(6, 7, 8, 9))
             {
               probs2 <- rep(0, 3 * lx)
