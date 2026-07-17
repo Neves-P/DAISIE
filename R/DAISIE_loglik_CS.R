@@ -888,7 +888,6 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
     loglik <- -Inf
   }
   loglik <- as.numeric(loglik)
-  #testit::assert(is.numeric(loglik))
   return(loglik)
 }
 
