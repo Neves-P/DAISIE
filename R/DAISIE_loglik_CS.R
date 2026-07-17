@@ -814,8 +814,7 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
               k1 = k1,
               ddep = ddep
             )
-            #if(stac %in% c(2,3,6,7))
-            #{
+            #if(stac %in% c(2,3,6,7)) {
             probs2 <- rep(0, 2 * lx + 1)
             probs2[1:lx] <- lacvec[1:lx] * (probs[1:lx] + probs[(2 * lx + 1):(3 * lx)])
             probs2[(lx + 1):(2 * lx)] <- lacvec[2:(lx + 1)] * probs[(lx + 1):(2 * lx)]
