@@ -610,7 +610,7 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
     return(loglik)
   }
   if ((ddep == 1 | ddep == 11) & ceiling(K) < (S + missnumspec)) {
-      warning('The proposed value of K is incompatible with the number of species
+    warning('The proposed value of K is incompatible with the number of species
           in the clade. Likelihood for this parameter set
           will be set to -Inf. \n')
     loglik <- -Inf
@@ -679,13 +679,16 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
               probs2 <- rep(0, 4 * lx)
               probs2[(2 * lx + 1):(4 * lx)] <- probs[1:(2 * lx)]
               probs2[1:(2 * lx)] <- 0
+              #probs2[1:(2 * lx)] <- probs[1:(2 * lx)]
+              #probs2[(2 * lx + 1):(4 * lx)] <- 0
               probs <- probs2
               rm(probs2)
               probs <- DAISIE_integrate(probs,brts[2:3],DAISIE_loglik_rhs1,c(pars1,k1,ddep),rtol = reltolint,atol = abstolint,method = methode)
               cp <- checkprobs2(lx, loglik, probs, verbose); loglik <- cp[[1]]; probs <- cp[[2]]
               if (stac %in% c(1, 5))
               {
-                loglik <- loglik + log(probs[(stac == 1) * lx + (stac == 5) + 1 + missnumspec])
+                #loglik <- loglik + log(probs[(stac == 1) * lx + (stac == 5) + 1 + missnumspec])
+                loglik <- loglik + log((missnumspec + 1) * probs[(stac == 1) * lx + (stac == 5) + 1 + missnumspec])
               } else if (stac %in% c(6, 7, 8, 9))
               {
                 probs2 <- rep(0, 3 * lx)
@@ -730,10 +733,10 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
               }
               probs <- probs2
               rm(probs2, probs3, probs4, probs5)
-            }
-            if (stac %in% c(1, 5))
-            {
-              loglik <- loglik + log(probs[(stac == 1) * lx + 1 + missnumspec])
+              if (stac %in% c(1, 5))
+              {
+                loglik <- loglik + log(probs[(stac == 1) * 2 * lx + 1 + missnumspec])
+              }
             }
           } else
           { #max age equals island age
@@ -868,7 +871,6 @@ DAISIE_loglik_CS_M1 <- DAISIE_loglik <- function(pars1,
       }
     }
   }
-
   if (length(pars1) == 11) {
     print_parameters_and_loglik(pars = c(stac, pars1[1:10]), # should this be 6:10, or 6:11?
                                 loglik = loglik,
@@ -1268,10 +1270,10 @@ DAISIE_loglik_CS <- DAISIE_loglik_all <- function(
       loglik <- loglik + loglik_i
       if(i == 2 | found == FALSE) {
         duplicates_check_list[[k]] <- list(stac = datalist[[i]]$stac,
-                                          brts = datalist[[i]]$branching_times,
-                                          missnumspec = datalist[[i]]$missing_species,
-                                          type1or2 = datalist[[i]]$type1or2,
-                                          loglik = loglik_i)
+                                           brts = datalist[[i]]$branching_times,
+                                           missnumspec = datalist[[i]]$missing_species,
+                                           type1or2 = datalist[[i]]$type1or2,
+                                           loglik = loglik_i)
         k <- k + 1
       }
     }
@@ -1562,9 +1564,9 @@ DAISIE_ode_cs <- function(
   }
   if (startsWith(methode, "odeint")) {
     if(runmod == "daisie_runmod3") {
-       parsvec <- c(unlist(parsvec), kk)
-       parsvec <- parsvec[-c(1:2)]
-       kk <- lx
+      parsvec <- c(unlist(parsvec), kk)
+      parsvec <- parsvec[-c(1:2)]
+      kk <- lx
     }
     probs <- .Call("daisie_odeint_cs", runmod, initprobs, tvec, lx, kk, parsvec[-length(parsvec)], methode, atol, rtol)
   } else if (startsWith(methode, "deSolve_R::")) {
@@ -1579,10 +1581,10 @@ DAISIE_ode_cs <- function(
     probs <- y[-1,-1]
   } else {
     if(runmod == "daisie_runmod3") {
-       parsvec <- c(unlist(parsvec), kk)
-       parsvec <- parsvec[-c(1:2)]
-       kk <- lx
-       initmod <- "daisie_initmod3"
+      parsvec <- c(unlist(parsvec), kk)
+      parsvec <- parsvec[-c(1:2)]
+      kk <- lx
+      initmod <- "daisie_initmod3"
     } else
     {
       initmod <- "daisie_initmod"
