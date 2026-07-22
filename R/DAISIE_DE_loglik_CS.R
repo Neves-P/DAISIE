@@ -22,7 +22,7 @@ DAISIE_DE_loglik <- function(pars1,
                                       reltolint = reltolint,
                                       abstolint = abstolint)
 
-  } else if (((stac == 2 || stac == 3 || stac == 7) && length(brts) == 2) || stac == 9) {
+  } else if (((stac == 2 || stac == 3 || stac == 5 || stac == 7) && length(brts) == 2) || stac == 9) {
     if(sampling == 'rho' || missnumspec == 0)
       loglikelihood <- DAISIE_DE_logpES(brts = brts,
                                         missnumspec = missnumspec,
@@ -40,7 +40,7 @@ DAISIE_DE_loglik <- function(pars1,
                                    methode = methode,
                                    reltolint = reltolint,
                                    abstolint = abstolint)
-  } else if (((stac == 2 || stac == 3 || stac == 7) && length(brts) > 2) || stac == 6) {
+  } else if (((stac == 2 || stac == 3 || stac == 5 || stac == 7) && length(brts) > 2) || stac == 6) {
     if(sampling == 'rho' || missnumspec == 0)
       loglikelihood <- DAISIE_DE_logpEC(brts = brts,
                                         missnumspec = missnumspec,
