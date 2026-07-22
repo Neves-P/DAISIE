@@ -1,4 +1,4 @@
-test_that("DAISIE_logp0 is correct", {
+test_that("DAISIE_DE and DAISIE agree", {
   data(made_up_datalist)
   datalist <- made_up_datalist
 
@@ -14,17 +14,7 @@ test_that("DAISIE_logp0 is correct", {
     list(
       branching_times = branching_times,
       stac = stac,
-      missing_species = missing_species,
-      all_colonisations = list(
-        list(
-          event_times = c(15.80, 4.6934329),
-          species_type = "A"
-        ),
-        list(
-          event_times = c(15.80, 10.1612711),
-          species_type = "I"
-        )
-      )
+      missing_species = missing_species
     )
   }
 
@@ -130,13 +120,13 @@ test_that("DAISIE_logp0 is correct", {
     make_artificial_entry(
       missing_species = 0,
       stac = 7,
-      branching_times = c(4, 2, 1)
+      branching_times = c(15.8, 2, 1)
     ),
 
     make_artificial_entry(
       missing_species = 2,
       stac = 7,
-      branching_times = c(4, 2, 1)
+      branching_times = c(15.8, 2, 1)
     )
   )
 
@@ -145,20 +135,6 @@ test_that("DAISIE_logp0 is correct", {
   # =============================================================================
 
   datalist <- c(datalist, new_entries)
-
-  # =============================================================================
-  # Check the entries that were added
-  # =============================================================================
-
-  datalist[(length(datalist) - length(new_entries) + 1):length(datalist)]
-
-  parameter_de <- c(2.546591, 2.678781, 2.678781, 0.009326754, 1.008583)
-})
-
-
-test_that("DE_loglik_CS is correct", {
-  data(made_up_datalist)
-  datalist <- made_up_datalist
 
   pars1 <- c(2.546591, 2.678781, 2.678781, 0.009326754, 1.008583)
 
@@ -176,7 +152,7 @@ test_that("DE_loglik_CS is correct", {
     )
   )
 
-  pars1 <- c(2.546591, 2.678781, Inf, 0.009326754, 1.008583)
+  pars1[3] <- Inf
 
   ll2 <- DAISIE:::DAISIE_loglik_CS(
     pars1 = pars1,
