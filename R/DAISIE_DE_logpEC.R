@@ -122,7 +122,7 @@ DAISIE_DE_logpEC <- function(brts,
                                       atol = abstolint)
 
   # Initial conditions
-  if (stac == 6) {
+  if (stac == 6 || stac == 7) {
     initial_conditions3 <- c(DA1 = solution2[, "DA2"][[2]],
                              DM1 = solution2[, "DM1"][[2]],
                              E   = solution2[, "E"][[2]])
