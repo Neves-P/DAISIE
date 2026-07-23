@@ -1,4 +1,5 @@
 test_that("DAISIE_DE and DAISIE agree", {
+  skip_on_cran()
   data(made_up_datalist)
   datalist <- made_up_datalist
 
