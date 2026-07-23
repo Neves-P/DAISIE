@@ -14,7 +14,7 @@
       "orcid": "0000-0003-4247-8785"
     },
     {
-      "name": "Phillimore, Albert B. ",
+      "name": "Phillimore, Albert B.",
       "orcid": "0000-0002-6553-1553"
     },
     {
@@ -100,7 +100,7 @@
       "relation_type": {
         "id": "issupplementto",
         "title": {
-          "de": "Erg\u00e4nzt",
+          "de": "Ergänzt",
           "en": "Is supplement to"
         }
       },
@@ -151,6 +151,5 @@
     }
   ],
   "license": "GPL-3.0-or-later",
-  "access_right": "open",
-  ]
+  "access_right": "open"
 }
