@@ -96,14 +96,32 @@
       {
         "identifier": "https://rsetienne.github.io/DAISIE/",
         "relation": "isDocumentedBy",
-        "resource_type": "publication-softwaredocumentation"
+        "resource_type": "publication-softwaredocumentation",
+        "scheme": "url"
       },
       {
         "identifier": "https://cran.r-project.org/package=DAISIE",
         "relation": "isSourceOf",
-        "resource_type": "software"
+        "resource_type": "software",
+        "scheme": "url"
       }
   ],
+  "custom": {
+    "code:codeRepository": "https://github.com/rsetienne/DAISIE",
+    "code:programmingLanguage": [
+      {
+        "id": "r",
+        "title": {"en": "R"}
+      }
+    ],
+    "code:developmentStatus": [
+      {
+        "id": "active",
+        "title": {"en": "Active"}
+      }
+    ]
+  },
+  "language": "eng",
   "license": "GPL-3.0-or-later",
   "access_right": "open"
 }
