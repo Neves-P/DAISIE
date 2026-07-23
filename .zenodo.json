@@ -89,12 +89,68 @@
     "likelihood",
     "simulation"
   ],
-  "license": "GPL-3.0-or-later",
-  "access_right": "open",
-  "url": "https://rsetienne.github.io/DAISIE/",
   "references": [
     {
       "reference": "Valente, L., Etienne, R.S., & Phillimore, A.B. (2014). The effects of island ontogeny on species diversity and phylogeny. Proceedings of the Royal Society B: Biological Sciences, 281(1784), 20133227--20133227. http://doi.org/10.1098/rspb.2013.3227"
     }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Neves-P/DAISIE/tree/v5.0.4",
+      "relation_type": {
+        "id": "issupplementto",
+        "title": {
+          "de": "Erg\u00e4nzt",
+          "en": "Is supplement to"
+        }
+      },
+      "resource_type": {
+        "id": "software",
+        "title": {
+          "de": "Software",
+          "en": "Software"
+        }
+      },
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://cran.r-project.org/package=DAISIE",
+      "relation_type": {
+        "id": "issourceof",
+        "title": {
+          "de": "Ist Quelle von",
+          "en": "Is source of"
+        }
+      },
+      "resource_type": {
+        "id": "software",
+        "title": {
+          "de": "Software",
+          "en": "Software"
+        }
+      },
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://rsetienne.github.io/DAISIE/",
+      "relation_type": {
+        "id": "isdocumentedby",
+        "title": {
+          "de": "Wird dokumentiert von",
+          "en": "Is documented by"
+        }
+      },
+      "resource_type": {
+        "id": "publication-softwaredocumentation",
+        "title": {
+          "de": "Softwaredokumentation",
+          "en": "Software documentation"
+        }
+      },
+      "scheme": "url"
+    }
+  ],
+  "license": "GPL-3.0-or-later",
+  "access_right": "open",
   ]
 }
