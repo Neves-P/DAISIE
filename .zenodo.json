@@ -49,30 +49,36 @@
   "contributors": [
     {
       "name": "Torsten Hauffe",
-      "orcid": "0000-0001-5711-9457"
+      "orcid": "0000-0001-5711-9457",
+      "type": "Other"
     },
     {
       "name": "Giovanni Laudanno",
-      "orcid": "0000-0002-2952-3345"
+      "orcid": "0000-0002-2952-3345",
+      "type": "Other"
     },
     {
       "name": "Nadiah Kristensen",
-      "orcid": "0000-0002-9720-4581"
+      "orcid": "0000-0002-9720-4581",
+      "type": "Other"
     },
     {
       "name": "Ornela Dehayem Nanwou",
       "affiliation": "University of Groningen",
-      "orcid": "0009-0009-0507-1215"
+      "orcid": "0009-0009-0507-1215",
+      "type": "Other"
     },
     {
       "name": "Thijs Janzen",
       "affiliation": "University of Groningen",
-      "orcid": "0000-0002-4162-1140"
+      "orcid": "0000-0002-4162-1140",
+      "type": "Other"
     },
     {
       "name": "Raphael Scherrer",
       "affiliation": "University of Groningen",
-      "orcid": "0000-0002-1447-7630"
+      "orcid": "0000-0002-1447-7630",
+      "type": "Other"
     }
   ],
   "version": "5.0.0",
