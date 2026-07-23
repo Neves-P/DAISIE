@@ -8,7 +8,7 @@ DAISIE_loglik_all_choosepar <- function(trparsopt,
                                         pars2,
                                         datalist,
                                         methode,
-                                        CS_version = list(model = 1, function_to_optimize = 'DAISIE'),
+                                        CS_version = list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n'),
                                         abstolint = 1E-16,
                                         reltolint = 1E-10,
                                         equal_extinction = TRUE) {
@@ -110,7 +110,7 @@ DAISIE_ML1 <- function(
   maxiter = 1000 * round((1.25) ^ length(idparsopt)),
   methode = "odeint::runge_kutta_cash_karp54",
   optimmethod = "simplex",
-  CS_version = list(model = 1, function_to_optimize = 'DAISIE'),
+  CS_version = list(model = 1, function_to_optimize = 'DAISIE', sampling = 'n'),
   verbose = 0,
   tolint = c(1E-16, 1E-10),
   island_ontogeny = NA,
@@ -170,6 +170,16 @@ DAISIE_ML1 <- function(
   if(is.null(function_to_optimize)) function_to_optimize <- 'DAISIE'
   if(function_to_optimize == 'DAISIE_DE') {
     DAISIE_loglik_all_choosepar_fun <- DAISIE_DE_loglik_all_choosepar
+    if(equal_extinction == TRUE && 3 %in% idparsopt) {
+      message('You are setting equal extinction of endemic and non-endemic species,
+but you are also optimizing the extinction rate for non-endemic species.
+This is inconsistent. Optimization will proceed with the extinction rate of
+non-endemic species fixed to the value of endemic species.\n')
+      initparsopt <- initparsopt[-which(idparsopt == 3)]
+      idparsopt <- idparsopt[-which(idparsopt == 3)]
+      idparsfix <- sort(c(idparsfix, 3))
+      parsfix[which(idparsfix == 3)] <- Inf
+    }
   } else
   {
     DAISIE_loglik_all_choosepar_fun <- DAISIE_loglik_all_choosepar
@@ -437,7 +447,7 @@ DAISIE_ML1 <- function(
     pars_to_print <- MLpars1[1:5]
     parnames <- c('lambda^c','mu','K','gamma','lambda^a')
   }
-  if(function_to_optimize != 'DAISIE') {
+  if(function_to_optimize == 'DAISIE_DE') {
     parnames[which(parnames == 'mu')] <- 'mu_E'
     parnames[which(parnames == 'K')] <- 'mu_NE'
     parnames[which(parnames == 'mu2')] <- 'mu2_E'
@@ -457,8 +467,8 @@ DAISIE_ML1 <- function(
       paste(ExpEIN[[1]], ExpEIN[[2]], ExpEIN[[3]])
     ) # nolint end
   }
-  if(function_to_optimize != 'DAISIE') {
-    names(out2[2:3]) <- c('mu_E','mu_NE')
+  if(function_to_optimize == 'DAISIE_DE' & equal_extinction == FALSE) {
+    names(out2)[2:3] <- c('mu_E','mu_NE')
   }
   return(invisible(out2))
 }
