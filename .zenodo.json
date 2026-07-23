@@ -10,7 +10,10 @@
     },
     {
       "name": "Luis Valente",
-      "affiliation": "Naturalis Biodiversity Center",
+      "affiliation": [
+      "Naturalis Biodiversity Center",
+      "University of Groningen"
+      ],
       "orcid": "0000-0003-4247-8785"
     },
     {
@@ -91,5 +94,11 @@
     "simulation"
   ],
   "license": "GPL-3.0-or-later",
-  "access_right": "open"
+  "access_right": "open",
+  "url": "https://rsetienne.github.io/DAISIE/",
+  "references": [
+    {
+      "references": "Valente, L., Etienne, R.S., & Phillimore, A.B. (2014). The effects of island ontogeny on species diversity and phylogeny. Proceedings of the Royal Society B: Biological Sciences, 281(1784), 20133227--20133227. http://doi.org/10.1098/rspb.2013.3227"
+    }
+  ]
 }
