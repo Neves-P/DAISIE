@@ -18,7 +18,7 @@
       "orcid": "0000-0002-6553-1553"
     },
     {
-      "name": "Haegema, Bart",
+      "name": "Haegeman, Bart",
       "orcid": "0000-0003-2325-4727"
     },
     {
@@ -94,7 +94,7 @@
   "url": "https://rsetienne.github.io/DAISIE/",
   "references": [
     {
-      "references": "Valente, L., Etienne, R.S., & Phillimore, A.B. (2014). The effects of island ontogeny on species diversity and phylogeny. Proceedings of the Royal Society B: Biological Sciences, 281(1784), 20133227--20133227. http://doi.org/10.1098/rspb.2013.3227"
+      "reference": "Valente, L., Etienne, R.S., & Phillimore, A.B. (2014). The effects of island ontogeny on species diversity and phylogeny. Proceedings of the Royal Society B: Biological Sciences, 281(1784), 20133227--20133227. http://doi.org/10.1098/rspb.2013.3227"
     }
   ]
 }
