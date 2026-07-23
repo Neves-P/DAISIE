@@ -47,7 +47,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/rsetienne/DAISIE/blob/v5.0.5/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/rsetienne/DAISIE/blob/v5.0.7/DESCRIPTION)
 
 Etienne R, Valente L, Phillimore A, Haegeman B, Lambert J, Santos Neves
 P, Xie S, Bilderbeek R, Hildenbrandt H (2026). *DAISIE: Dynamical
